@@ -1,0 +1,286 @@
+\chapter{State of the art} \label{chap:sota}
+
+\section*{}
+
+In this chapter we will describe several studies regarding the optimization of
+solid waste collection routes. We will also review the mathematical models used
+in these studies and provide alternative optimization techniques that can be
+applied to each one.
+
+In section~\ref{section:problem} the route collection problem will be detailed.
+Section~\ref{section:math} will mathematically formalize the three problem
+variants. The following sections in this  chapter present approaches applied to
+the cities of Trabon, Turkey\citep{Apaydin2007}, Barcelona,
+Spain\citep{Bautista2004}, Athens, Greece\citep{Karadimas2005}, Hanoi,
+Vietnam\citep{Tung2000} and Porto Alegre, Brazil\citep{Li2008}. 
+
+\section{General problem description}
+\label{section:problem}
+
+As stated by \citet{Golden01}, one can divide waste collection routing problems
+into three main categories. First, there is commercial collection, which
+regards waste collection from businesses and organizations like malls,
+factories and such. Second, the residential collection problem involves
+collecting household generated waste, usually stored in containers along the
+streets of a city.  Comparatively, the number of containers in the commercial
+problem is significantly smaller than in the residential case.
+
+In both of these two variants, each waste collection vehicle travels to a
+container, loads its contents into its hopper and moves on to the next
+container. As soon as the hopper is full, the vehicle travels to a landfill (or
+other recycling/treatment facility) and deposits the collected waste.
+
+The third variant --- named Rollon-Rolloff, which is described in
+\cite{Bodin00} --- involves large containers, which must be transported
+to the disposal facilities and replaced by empty ones. Their dimensions impose
+that each vehicle can only transport a single container (either full or empty)
+at a time. 
+
+In the Rollon-Rolloff original description, each waste collection vehicle can
+perform four basic operations:
+
+\begin{itemize}
+\item \textbf{Round trip} --- the vehicle picks up a container, brings it to a
+waste disposal facility (WDF) for emptying and returns it to its original
+location;
+
+\item \textbf{Exchange trip} --- the vehicle leaves the WDF with an empty
+container, travels to a location with a full one and switches them, bringing it
+back to the WDF;
+
+\item \textbf{Insertion trip} --- the vehicle brings an empty container from
+the WDF to a new location;
+
+\item \textbf{Removal trip} --- the vehicle picks up a full container from a
+location and leaves it at the WDF.
+\end{itemize}
+
+In each of these three main variants, extra parameters can vary. For example,
+we can consider a scenario with either a single or multiple waste disposal
+facilities. In the multiple facilities case, an extra restriction may be to
+balance the waste disposed at each location.
+
+\subsection{Project focus}
+
+Should this go here?
+
+\section{Mathematical models}
+\label{section:math}
+
+All three variants described in section~\ref{section:problem} have a common
+base for their mathematical models --- waste collection vehicles that travel
+along the streets of a given city. To model a city, the common approach is to
+define a graph in which each street is represented by one or two arcs
+(depending if the street is one or both ways), with street intersections being
+the vertices. Each arc may have several associated weights, reflecting the
+street distance, the time it takes to transverse it, or some other metric. As
+such, we define a city graph as the ordered tuple $G = (V, A)$, where $V$
+represent the vertices and $A$ the arcs.
+
+This definition alone does not suffice to realistically represent the possible
+vehicle routes, as there are extra restrictions which must be considered,
+specially regarding traffic signs. For example: at a given intersection, it may
+not be possible to take a left turn if you are arriving from a specific street.
+U-turns may also be forbidden, in certain intersections. 
+
+These restrictions can be specified by defining a cost for every pair of arcs
+that intersect at a given vertex.  We denote $t_{ava^\prime}$ as being the
+cost to go from the arc $a$ to arc $a^\prime$ by making a turn at $v$. If the
+arcs don't intersect at that vertex, or if the traffic signs forbid such a
+turn, we set $t_{ava^\prime} = +\infty$. Further details on this approach can
+be seen in \citet{Corberan2002887}.
+
+For now, we shall consider the case in which there is a single disposal
+facility, located in vertex $v_0 \in V$, and that all waste collection vehicles
+start and finish their routes there. We consider that there are $K$ vehicles
+available, and that each of the $K$ routes can be defined as a set of round
+trips, each starting at the disposal facility. We may or may not decide to
+limit the number of round trips in each route to one.
+
+Further more, we consider vehicles being limited to an amount $Q$ of waste that
+they can carry at any given time. This can be either measured in weight or in
+volume.
+
+\subsection{Residential scenario -- Capacitated arc routing problem}
+
+In the residential scenario, it is usual to model it as a \textit{Capacitated Arc
+Routing Problem} (CARP). Due to the container density per street, we consider
+that vehicles should serve arcs instead of individual nodes.
+
+A detailed description of CARP can be found in \citet{Sniezek01}, and a
+mathematical model is provided in \citet{Belenguer98}. In the latter document,
+it is assumed that each vehicle is limited to a single round trip. This happens
+due to the chosen minimization criteria. Here, the goal was to minimize the
+total cost of transversing and servicing the arcs in the calculated routes.
+With this metric, allowing a vehicle to perform more than a single round trip
+is the same as allowing for more than $K$ vehicles.
+
+We consider that there is a subset $A_R \in A$ which represents the arcs that
+must be serviced, and define $d_{a^\prime} \in \mathbb{R}$, with $a^\prime \in
+A_R$, as the quantity of waste that needs to be collected at that arc. The
+remaining arcs are called \textit{deadheading} arcs. The routes set is
+identified by $I = \{1, ..., K\}$.
+
+Then, we define a solution as a pair $(x, y)$, in which:
+
+\begin{align*}
+x_{ap} = & \quad \left\{
+	\begin{array}{ll}
+		1 & \quad \mbox{if vehicle $p \in I$ serves arc $a \in A_R$} \\
+		0 & \quad \mbox{otherwise}
+	\end{array}
+	\right. \\
+y_{ap} = & \quad \mbox{number of times vehicle $p \in I$ visits $a \in A$ without servicing it}
+\end{align*}
+
+From these variables, two extra functions are defined. The first,
+$x_p(A_R^\prime) \in \mathbb{Z}_{\geq0}$, defines the number of arcs serviced
+by vehicle $p \in I$ that are in $A_R^\prime \in A_R$. The second function,
+$y_p(A^\prime) \in \mathbb{Z}_{\geq0}$, represents the total number of times
+that vehicle $p \in I$ transverses the arcs in $A^\prime \in A$. These two functions can be defined as follow:
+
+\begin{align}
+	\forall_{p \in I, A_R^\prime \in A_R}	\quad x_p(A_R^\prime) = & \quad \sum_{a \in A_R^\prime} x_{ap} \\
+	\forall_{p \in I, A^\prime \in A}	\quad y_p(A^\prime) =   & \quad \sum_{a \in A^\prime} y_{ap}
+\end{align}
+
+Another important definition is the \textit{cutset}. For a given set $S
+\subseteq V$, $\delta(S) \in A$ represents the set of arcs that have one vertex
+in $S$ and the other one in $V - S$. Additionally, we define $A(S) \in A$ as
+the set of arcs with both endpoints in $S$. Their analogous functions,
+$\delta_R(S)$ and $A_R(S)$ are restricted to the set of arcs which require
+servicing.
+
+\begin{align}
+	\delta(S)	&= \{ (i, j) \in A : i \in S \wedge j \notin S \} \\
+	A(S)		&= \{ (i, j) \in A : i,j \in S \} \\
+	\delta_R(S)	&= \delta(S) \cap A_R \\
+	A_R(S)		&= A(S) \cap A_R
+\end{align}
+
+With these definitions, \citet{Belenguer98} defines CARP as the following
+Integer Programming:
+
+\begin{align}
+	\mbox{Minimize} & \quad \sum_{p \in I} \sum_{a \in A_R} c_a x_{ap} +
+	\sum_{p \in I} \sum_{a \in A} c_{a} y_{ap}
+	\\
+	\mbox{subject to} &  \notag{} \\
+	\forall_{a \in A_R} & \quad \sum_{p \in I} x_{ap} = 1
+	\label{carp:required}
+	\\
+	\forall_{p \in I} & \quad \sum_{a \in A_R} d_a x_{ap} \leq Q
+	\label{carp:capacity}
+	\\
+	\forall_{p \in I, S \subseteq V \setminus \{v_0\}, a \in A_R(S)} &
+	\quad x_p(\delta_R(S)) + y_p(\delta(S)) \geq 2x_{ap}
+	\label{carp:connectivity}
+	\\
+	\forall_{p \in I, S \subseteq V \setminus \{v_0\}} & \quad
+	x_p(\delta_R(S)) + y_p(\delta(S)) = 0 \pmod{2}
+	\label{carp:euler}
+	\\
+	\forall_{p \in I, a \in A} & \quad y_{ap} \in \mathbb{Z}_{\geq0} \\
+	\forall_{p \in I, a \in A_R} & \quad x_{ap} \in \{0, 1\}
+\end{align}
+
+Constraints \eqref{carp:required} ensure that all arcs that required arcs are
+served by one vehicle, while constraints \eqref{carp:capacity} ensure that each
+vehicle does not collect more waste than its own capacity.
+
+Constraints \eqref{carp:connectivity} imply that every vehicle $p$ that serves
+an arc $a$ has its route connecting $v_0$ to $a$. Finally, constraints
+\eqref{carp:euler} force each vehicle route to be a set of Eulerian circuits.
+
+These constraints aren't strict enough so that every solution represents a set
+of $K$ routes. There may be cases in which a vehicle route is defined by two or
+more disconnected Eulerian circuits. This isn't considered as a problem,
+because constraints~\eqref{carp:connectivity} force that all circuits
+disconnected from $v_0$ contain only deadheading arcs. Since arc costs in the
+minimization function are non-negative, each solution to the Integer Program
+will has an associated K-route solution --- we just need to remove circuits
+which are disconnected from $v_0$.
+
+\subsection{Commercial scenario --- Capacitated vehicle routing problem}
+
+When comparing the commercial and residential collection problems, one expects
+that the number of containers is significantly lower in the first case. This
+allows us to model the problem as a node/vertex routing problem, which is also
+known as the \textit{Vehicle Routing Problem} (VRP). Applications of this model
+are described in \citet{Tung2000} and \citet{Kim06}.
+
+In this approach, each vertex $v \in V \setminus {v_0}$ has a demand $d_v \in
+\mathbb{R}_{\geq0}$. Vehicle routes must cross all vertices whose demand is
+greater than $0$. Although commercial waste containers aren't usually located
+at street intersections, one can create additional vertices by splitting arcs.
+
+Another technique would be to create $G^\prime = (V^\prime, A^\prime)$ in which
+each vertex represents a waste container and the disposal facility. Each arc
+$(i, j) \in A^\prime$ has an associated cost of travelling from vertex $i$ to
+$j$, which can be easily obtained by applying a shortest path procedure to
+graph $G$. Another consideration is that while $G^\prime$ has less vertices
+than $G$, it is a fully connected graph. When using $G^\prime$ to define a
+mathematical model, we consider that the vehicles must only visit each vertex
+$v \in V^\prime \setminus \{v_0\}$ exactly once.
+
+Since the graph is directed, this problem is usually named \textit{Asymmetric
+Capacitated Vehicle Routing Problem} (ACVRP).  The most common mathematical
+model\citep{Toth01} is based on the concept of $G^\prime$, and defines a
+solution as a set of binary variables $x_{ij}$, one for each arc $(i, j)$.
+Additionally, we consider $r(S), S \subseteq V \setminus \{v_0\}$ as the
+minimum number of vehicles to serve all vertices in $S$. This value, that can
+be determined by solving the \textit{Bin Packing Problem} (BPP), has a trivial lower
+bound:
+
+\begin{equation}
+\forall_{S \subseteq V^\prime \setminus \{v_0\}} \quad r(S) \geq
+\lceil\frac{1}{Q} \sum_{v \in V^\prime} d_{v} \rceil
+\end{equation}
+
+These definitions allows us to define ACVRP as the following Integer Programming:
+
+\begin{align}
+	\mbox{Minimize} & \sum_{i \in V^\prime} \sum_{j \in V} c_{ij} x_{ij}
+	\\
+	\mbox{subject to} & \notag{}
+	\\
+	\forall_{j \in V \setminus \{v_0\}} & \quad \sum_{i \in V} x_{ij} = 1
+	\label{vrp:indegree}
+	\\
+	\forall_{i \in V \setminus \{v_0\}} & \quad \sum_{j \in V} x_{ij} = 1
+	\label{vrp:outdegree}
+	\\
+	& \quad \sum_{i \in V} x_{i0} = K \label{vrp:indepot} \\
+	& \quad \sum_{j \in V} x_{0j} = K \label{vrp:outdepot} \\
+	\forall_{S \subseteq V \setminus \{v_0\}, S \neq \emptyset} & \quad
+	\sum_{i \notin S} \sum_{i \in S} x_ij \geq r(S)
+	\label{vrp:connectivity}
+	\\
+	\forall_{i, j \in V} & \quad x_{ij} \in \{0, 1\}
+\end{align}
+
+Constraints \eqref{vrp:indegree} and \eqref{vrp:outdegree} impose that each
+vertex is visited exactly once, while constraints \eqref{vrp:indepot} and
+\eqref{vrp:outdepot} force that exactly $K$ vehicles leave and return to the
+disposal facility vertex. Finally, constraint \eqref{vrp:connectivity} ensures
+that each subset of vertices is served by at least the minimum number of
+vehicles required to fulfill their demands.
+
+
+\subsection{Rollon-Rolloff vehicle routing problem}
+
+In the \textit{Rollon-Rolloff Vehicle Routing Problem} (RRVRP), as in the
+commercial problem, the number of containers is reduced. It has been researched
+in several studies, with an approach based on a node routing mathematical
+structure\citep{Bodin00,Aringhieri04,Meulemeester97}. Bodin et al. describe
+this problem as being a combination of ACVRP --- due to round, removal and
+insertion trips --- and BPP --- due to exchange trips.
+
+
+\section{Approaches}
+
+\subsection{Ant colony optimization}
+
+
+\footnote{Exemplo de nota de rodapé.}
+
