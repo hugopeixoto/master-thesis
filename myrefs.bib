@@ -8,6 +8,13 @@
  YEAR=2005
 }
 
+@manual{rmg:user-guide,
+	author = {Teutenberg, J.},
+	title = {{Random Map Generator 1.0 --- User's Guide}},
+	year = {2003}
+}
+
+
 @article{Gomez20082465,
 	title = {{Characterization of urban solid waste in Chihuahua, Mexico}},
 	journal = "Waste Management",
@@ -92,7 +99,7 @@
 @inproceedings{Bautista2004,
 	author    = {Joaqu\'{\i}n Bautista and Jordi Pereira},
 	title     = {{Ant Algorithms for Urban Waste Collection Routing}},
-	booktitle = {ANTS Workshop},
+	booktitle = {{ANTS Workshop}},
 	year      = {2004},
 	pages     = {302-309}
 }
@@ -109,7 +116,7 @@
 @article{Bhat1996,
 	author = {Bhat, Vasanthakumar N.},
 	title = {{A Model for the Optimal Allocation of Trucks for Solid Waste Management}},
-	journal = {Waste Management Research},
+	journal = {{Waste Management Research}},
 	volume = {14},
 	number = {1},
 	pages = {87-96},
@@ -137,33 +144,16 @@
 	pages={1133-1149}
 }
 
-@manual{rmg:user-guide,
-	author = {Teutenberg, J.},
-	title = {{Random Map Generator 1.0 --- User's Guide}},
-	year = {2003}
-}
-
-@article{Golden01,
+@inproceedings{Golden01,
 	author = {Golden, B. L. and Assad, A. A. and Wasil, E. A.},
 	title = {{Routing vehicles in the real world: applications in the solid waste, beverage, food, dairy, and newspaper industries}},
-	book = {The vehicle routing problem},
+	booktitle = {The vehicle routing problem},
 	year = {2001},
 	isbn = {0-89871-498-2},
 	pages = {245--286},
 	publisher = {Society for Industrial and Applied Mathematics},
 	address = {Philadelphia, PA, USA},
 }
-
-@article{Bodin00,
-	author = {Bodin, Lawrence and Mingozzi, Aristide and Baldacci, Roberto and Ball, Michael},
-	title = {{The Rollon-Rolloff Vehicle Routing Problem}},
-	journal = {TRANSPORTATION SCIENCE},
-	volume = {34},
-	number = {3},
-	pages = {271-288},
-	year = {2000}
-}
-
 @article{Corberan2002887,
 	title = {{The Rural Postman Problem on mixed graphs with turn penalties}},
 	journal = {{Computers \& Operations Research}},
@@ -197,10 +187,10 @@
 	address = {Norwell, MA, USA}
 }
 
-@article{Sniezek01,
+@inproceedings{Sniezek01,
 	author = {Sniezek, J. and Bodin, L. and Levy, L. and Ball, M.},
 	title = {{Capacitated arc routing problem with vehicle-site dependencies: the Philadelphia experience}},
-	book = {The vehicle routing problem},
+	booktitle = {The vehicle routing problem},
 	year = {2001},
 	isbn = {0-89871-498-2},
 	pages = {287--308},
@@ -225,6 +215,21 @@
 	keywords = "Capacitated clustering"
 }
 
+@article{Teixeira04,
+	author={Teixeira, Joao and Antunes, Antonio Pais and de Sousa, Jorge Pinho},
+	title={{Recyclable waste collection planning--a case study}},
+	journal={European Journal of Operational Research},
+	year=2004,
+	volume={158},
+	number={3},
+	pages={543-554},
+	month={November},
+	keywords={},
+	abstract={No abstract is available for
+	this item.},
+	url={http://ideas.repec.org/a/eee/ejores/v158y2004i3p543-554.html}
+}
+
 @article{Aringhieri04,
 	title = {{An asymmetric vehicle routing problem arising in the collection and disposal of special waste}},
 	journal = "Electronic Notes in Discrete Mathematics",
@@ -237,6 +242,17 @@
 	doi = "DOI: 10.1016/j.endm.2004.03.011",
 	url = "http://www.sciencedirect.com/science/article/B75GV-4FXV41J-C/2/905ccf062da25c486cdd750c8f4f21cb",
 	author = "Roberto Aringhieri and Maurizio Bruglieri and Federico Malucelli and Maddalena Nonato"
+}
+
+
+%%%%%%% Rollon-Rolloff
+
+@article{Cristallo94,
+	author="Cristallo G.",
+	title = {{Optimisation de Tournées de Véhicules de Transport Container}},
+	journal = {{Mémoire de license en Sciences Economique et Sociales, Facultés Universitaires Notre-Dame de la Paix}}
+	address = {{Namur, Belgium}}
+	year = 1994
 }
 
 @article{Meulemeester97,
@@ -252,10 +268,36 @@
 	url = "http://www.ingentaconnect.com/content/pal/01605682/1997/00000048/00000001/2600325"
 }
 
-@article{Toth01,
+@article{Bodin00,
+	author = {Bodin, Lawrence and Mingozzi, Aristide and Baldacci, Roberto and Ball, Michael},
+	title = {{The Rollon-Rolloff Vehicle Routing Problem}},
+	journal = {TRANSPORTATION SCIENCE},
+	volume = {34},
+	number = {3},
+	pages = {271-288},
+	year = {2000}
+}
+
+@article{Baldacci06,
+	author = {Baldacci, Roberto and Bodin, Lawrence and Mingozzi, Aristide},
+	title = {The multiple disposal facilities and multiple inventory locations rollon-rolloff vehicle routing problem},
+	journal = {Comput. Oper. Res.},
+	volume = {33},
+	number = {9},
+	year = {2006},
+	issn = {0305-0548},
+	pages = {2667--2702},
+	doi = {http://dx.doi.org/10.1016/j.cor.2005.02.023},
+	publisher = {Elsevier Science Ltd.},
+	address = {Oxford, UK, UK},
+}
+
+%%%%%%% Vehicle Routing Problem
+
+@inproceedings{Toth01,
 	author = {Toth, P. and Vigo, D.},
 	title = {An overview of vehicle routing problems},
-	book = {The vehicle routing problem},
+	booktitle = {The vehicle routing problem},
 	year = {2001},
 	isbn = {0-89871-498-2},
 	pages = {1--26},
@@ -263,11 +305,24 @@
 	address = {Philadelphia, PA, USA}
 }
 
-@article{McCarthy94,
+@inproceedings{Archetti05,
+	author = {Archetti, M.G. Speranza},
+	title = {{Collection of waste with single load trucks: a real case}},
+	editor = {Fleischmann, B. and Klose, A.},
+	booktitle = {Distribution Logistics: Advanced Solutions to Practical Problems},
+	year = {2005},
+	pages = {105-119},
+	publisher = {Springer-Verlag},
+	address = {Berlin Heidelberg}
+}
+
+%%%%%%% Studies on MSW Management
+
+@inproceedings{McCarthy94,
 	author = {McCarthy, J.E.},
 	year = {1994},
 	title = {{The municipal solid waste problem in the main industrialized countries}},
-	book = {{The Management of Municipal Solid Waste in Europe: Economic, Technological and Environmental Perspectives}},
+	booktitle = {{The Management of Municipal Solid Waste in Europe: Economic, Technological and Environmental Perspectives}},
 	editor = {{Curzio, A.Q., Prosperetti, L., Zoboli, R.}},
 	address = {Amsterdam}
 }

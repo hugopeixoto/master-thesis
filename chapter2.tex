@@ -60,10 +60,6 @@ we can consider a scenario with either a single or multiple waste disposal
 facilities. In the multiple facilities case, an extra restriction may be to
 balance the waste disposed at each location.
 
-\subsection{Project focus}
-
-Should this go here?
-
 \section{Mathematical models}
 \label{section:math}
 
@@ -101,7 +97,11 @@ Further more, we consider vehicles being limited to an amount $Q$ of waste that
 they can carry at any given time. This can be either measured in weight or in
 volume.
 
-\subsection{Residential scenario -- Capacitated arc routing problem}
+
+
+
+
+\subsection{Residential scenario}
 
 In the residential scenario, it is usual to model it as a \textit{Capacitated Arc
 Routing Problem} (CARP). Due to the container density per street, we consider
@@ -185,7 +185,7 @@ Integer Programming:
 \end{align}
 
 Constraints \eqref{carp:required} ensure that all arcs that required arcs are
-served by one vehicle, while constraints \eqref{carp:capacity} ensure that each
+serviced by one vehicle, while constraints \eqref{carp:capacity} ensure that each
 vehicle does not collect more waste than its own capacity.
 
 Constraints \eqref{carp:connectivity} imply that every vehicle $p$ that serves
@@ -201,7 +201,10 @@ minimization function are non-negative, each solution to the Integer Program
 will has an associated K-route solution --- we just need to remove circuits
 which are disconnected from $v_0$.
 
-\subsection{Commercial scenario --- Capacitated vehicle routing problem}
+
+
+
+\subsection{Commercial scenario}
 
 When comparing the commercial and residential collection problems, one expects
 that the number of containers is significantly lower in the first case. This
@@ -229,8 +232,8 @@ model\citep{Toth01} is based on the concept of $G^\prime$, and defines a
 solution as a set of binary variables $x_{ij}$, one for each arc $(i, j)$.
 Additionally, we consider $r(S), S \subseteq V \setminus \{v_0\}$ as the
 minimum number of vehicles to serve all vertices in $S$. This value, that can
-be determined by solving the \textit{Bin Packing Problem} (BPP), has a trivial lower
-bound:
+be determined by solving the \textit{Bin Packing Problem} (BPP), has a trivial
+lower bound:
 
 \begin{equation}
 \forall_{S \subseteq V^\prime \setminus \{v_0\}} \quad r(S) \geq
@@ -245,36 +248,97 @@ These definitions allows us to define ACVRP as the following Integer Programming
 	\mbox{subject to} & \notag{}
 	\\
 	\forall_{j \in V \setminus \{v_0\}} & \quad \sum_{i \in V} x_{ij} = 1
-	\label{vrp:indegree}
+	\label{acvrp:indegree}
 	\\
-	\forall_{i \in V \setminus \{v_0\}} & \quad \sum_{j \in V} x_{ij} = 1
-	\label{vrp:outdegree}
+	& \quad \sum_{i \in V} x_{0i} = K
+	\label{acvrp:outdepot}
 	\\
-	& \quad \sum_{i \in V} x_{i0} = K \label{vrp:indepot} \\
-	& \quad \sum_{j \in V} x_{0j} = K \label{vrp:outdepot} \\
+	\forall_{i \in V} & \quad \sum_{j \in V} x_{ij} = \sum_{j \in V} x_{ji}
+	\label{acvrp:in-out}
+	\\
 	\forall_{S \subseteq V \setminus \{v_0\}, S \neq \emptyset} & \quad
 	\sum_{i \notin S} \sum_{i \in S} x_ij \geq r(S)
-	\label{vrp:connectivity}
+	\label{acvrp:capacity}
 	\\
 	\forall_{i, j \in V} & \quad x_{ij} \in \{0, 1\}
 \end{align}
 
-Constraints \eqref{vrp:indegree} and \eqref{vrp:outdegree} impose that each
-vertex is visited exactly once, while constraints \eqref{vrp:indepot} and
-\eqref{vrp:outdepot} force that exactly $K$ vehicles leave and return to the
-disposal facility vertex. Finally, constraint \eqref{vrp:connectivity} ensures
-that each subset of vertices is served by at least the minimum number of
-vehicles required to fulfill their demands.
+Constraints \eqref{acvrp:indegree} impose that each vertex is visited exactly
+once, while constraints \eqref{acvrp:indepot} force that exactly $K$ vehicles
+leave the disposal facility and \eqref{acvrp:in-out} forces that every vehicle
+that visits a node must leave it. Finally, \eqref{acvrp:capacity} ensures that
+each subset of vertices is serviced by at least the minimum number of vehicles
+required to fulfill their demands, thus respecting the capacity constraints.
 
 
-\subsection{Rollon-Rolloff vehicle routing problem}
 
-In the \textit{Rollon-Rolloff Vehicle Routing Problem} (RRVRP), as in the
-commercial problem, the number of containers is reduced. It has been researched
-in several studies, with an approach based on a node routing mathematical
-structure\citep{Bodin00,Aringhieri04,Meulemeester97}. Bodin et al. describe
-this problem as being a combination of ACVRP --- due to round, removal and
-insertion trips --- and BPP --- due to exchange trips.
+
+
+\subsection{Rollon-Rolloff scenario}
+
+Regarding the Rollon-Rolloff case, the earliest studies we are familiar with
+are \citet{Cristallo94}, \citet{Meulemeester97}, \citet{Bodin00}. According to
+Bodin et al., the first three papers assume that it is known beforehand which
+trip type (see section~\ref{section:problem} must serve each container. This
+problem is defined as the \textit{Rolloff-Rollon Vehicle Routing Problem}
+(RRVRP).
+
+Each given trip $t \in T$ is defined by its type and by a tuple of vertices to
+visit, in a specific order. The problem of assigning trips to vehicles can be
+formulated as an \textit{Asymmetric Vehicle Routing Problem} (AVRP). AVRP is
+similar to the ACVRP without the vehicle capacity constraints, but differs in
+that the number of vehicles isn't given --- it is a value which we seek to
+minimize. Usually, the number of vehicles must be bounded by a given interval
+$[L, U]$.
+
+In order to model the RRVRP as a AVRP, we define a new graph, $G^\prime =
+(V^\prime, A^\prime)$. The vertices on this new graph are the disposal facility
+node and a node for each trip to be serviced. Arc $(i, j) \in A^\prime$
+represent the transition between trip $i$ and trip $j$. When $i = 0$, we
+consider this transition to be the start of a route; when $j = 0$, we consider
+it as the end. The costs of going from the end location of a given trip to the
+start location of another one are given by $c_{a}, a \in A^\prime$.
+
+The AVRP formulation for the RRVRP can now be defined as:
+
+\begin{align}
+	\mbox{Minimize} & \quad K_A \sum_{i \in V^\prime} \sum_{j \in V} c_{ij} x_{ij} + K_B \sum_{j \in V} x_{0j}
+	\\
+	\mbox{subject to} & \notag{}
+	\\
+	\forall_{j \in V \setminus \{v_0\}} & \quad \sum_{i \in V} x_{ij} = 1
+	\label{avrp:indegree}
+	\\
+	\forall_{i \in V} & \quad \sum_{j \in V} x_{ij} = \sum_{j \in V} x_{ji}
+	\label{avrp:in-out}
+	\\
+	& \quad \sum_{j \in V} x_{0j} \leq U \label{avrp:upper-k} \\
+	& \quad \sum_{j \in V} x_{0j} \geq L \label{avrp:lower-k} \\
+	\forall_{i, j \in V} & \quad x_{ij} \in \{0, 1\}
+\end{align}
+
+
+A similar problem is defined by \citet{Archetti05}, named \textit{1-Skip
+(container) Collection Problem} (1-SCP). Here, multiple disposal facilities are
+available, and there are compatibility constraints between the facilities and
+the containers. The trips that each vehicle can perform are different from the
+four types defined in the RRVRP. Each vehicle starts its tour from a depot with
+an empty container and travels to a location where there is a full one. The two
+containers are then exchanged, and the vehicle proceeds with the full container
+to a compatible disposal facility. It then proceeds to another trip, with a new
+empty container. This model also considers time windows for picking up and
+emptying containers.
+
+The authors of \citet{Aringhieri04} also present an alternative definition for
+the Rollon-Rolloff model. 
+
+Each request $i$ for waste collection is
+characterized by its location ($\gamma_i$), container type ($\beta_{i}$) and
+waste material type ($\mu_i$). 
+
+
+
+
 
 
 \section{Approaches}
