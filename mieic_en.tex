@@ -20,6 +20,8 @@
 \usepackage[utf8]{inputenc}
 \usepackage{amsmath}
 \usepackage{amsfonts}
+\usepackage{tkz-graph}
+\usetikzlibrary{calc,arrows,shapes}
 %\usepackage[latin1]{inputenc}
 
 %% Use option portuges if needed
@@ -102,12 +104,12 @@ Master in Informatics and Computing Engineering}
 %%----------------------------------------
 \maketitle
 %% Uncomment next line in the final version
-\committeepage
+%\committeepage
 
 %% Preliminary materials
 \StartPrelim
 \begin{singlespace}
-  \include{abstract_en} % the abstract
+  %\include{abstract_en} % the abstract
   %\include{acknows_en}  % the acknowledgments
   %\include{quote}    % initial quotation if desired
   \cleardoublepage
@@ -117,9 +119,9 @@ Master in Informatics and Computing Engineering}
   \pdfbookmark[0]{List of Figures}{figures}
   \listoffigures
   \cleardoublepage
-  \pdfbookmark[0]{List of Tables}{tables}
-  \listoftables
-  \cleardoublepage
+  %\pdfbookmark[0]{List of Tables}{tables}
+  %\listoftables
+  %\cleardoublepage
   \pdfbookmark[0]{Abbreviations}{abbrevs}
   \include{abbrevs_en}  % the list of abbreviations used
 \end{singlespace}
@@ -140,7 +142,7 @@ Master in Informatics and Computing Engineering}
 %% Final materials
 %%----------------------------------------
 
-\bibliographystyle{unsrt}
+%\bibliographystyle{unsrt}
 \begin{singlespace}
   %% Bibliography
   %% Comment the next command if BibTeX file not used, 

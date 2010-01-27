@@ -137,7 +137,8 @@ From these variables, two extra functions are defined. The first,
 $x_p(A_R^\prime) \in \mathbb{Z}_{\geq0}$, defines the number of arcs serviced
 by vehicle $p \in I$ that are in $A_R^\prime \in A_R$. The second function,
 $y_p(A^\prime) \in \mathbb{Z}_{\geq0}$, represents the total number of times
-that vehicle $p \in I$ transverses the arcs in $A^\prime \in A$. These two functions can be defined as follow:
+that vehicle $p \in I$ transverses the arcs in $A^\prime \in A$. These two
+functions can be defined as follow:
 
 \begin{align}
 	\forall_{p \in I, A_R^\prime \in A_R}	\quad x_p(A_R^\prime) = & \quad \sum_{a \in A_R^\prime} x_{ap} \\
@@ -159,7 +160,7 @@ servicing.
 \end{align}
 
 With these definitions, \citet{Belenguer98} defines CARP as the following
-Integer Programming:
+integer programming formulation:
 
 \begin{align}
 	\mbox{Minimize} & \quad \sum_{p \in I} \sum_{a \in A_R} c_a x_{ap} +
@@ -240,7 +241,8 @@ lower bound:
 \lceil\frac{1}{Q} \sum_{v \in V^\prime} d_{v} \rceil
 \end{equation}
 
-These definitions allows us to define ACVRP as the following Integer Programming:
+These definitions allows us to define ACVRP as the following integer
+programming formulation:
 
 \begin{align}
 	\mbox{Minimize} & \sum_{i \in V^\prime} \sum_{j \in V} c_{ij} x_{ij}
@@ -250,7 +252,7 @@ These definitions allows us to define ACVRP as the following Integer Programming
 	\forall_{j \in V \setminus \{v_0\}} & \quad \sum_{i \in V} x_{ij} = 1
 	\label{acvrp:indegree}
 	\\
-	& \quad \sum_{i \in V} x_{0i} = K
+	& \quad \sum_{i \in V} x_{v_0i} = K
 	\label{acvrp:outdepot}
 	\\
 	\forall_{i \in V} & \quad \sum_{j \in V} x_{ij} = \sum_{j \in V} x_{ji}
@@ -264,7 +266,7 @@ These definitions allows us to define ACVRP as the following Integer Programming
 \end{align}
 
 Constraints \eqref{acvrp:indegree} impose that each vertex is visited exactly
-once, while constraints \eqref{acvrp:indepot} force that exactly $K$ vehicles
+once, while constraints \eqref{acvrp:outdepot} force that exactly $K$ vehicles
 leave the disposal facility and \eqref{acvrp:in-out} forces that every vehicle
 that visits a node must leave it. Finally, \eqref{acvrp:capacity} ensures that
 each subset of vertices is serviced by at least the minimum number of vehicles
@@ -302,7 +304,8 @@ start location of another one are given by $c_{a}, a \in A^\prime$.
 The AVRP formulation for the RRVRP can now be defined as:
 
 \begin{align}
-	\mbox{Minimize} & \quad K_A \sum_{i \in V^\prime} \sum_{j \in V} c_{ij} x_{ij} + K_B \sum_{j \in V} x_{0j}
+	\mbox{Minimize} & \quad K_A \sum_{i \in V^\prime} \sum_{j \in V} c_{ij} x_{ij} +
+				K_B \sum_{j \in V} x_{v_0j}
 	\\
 	\mbox{subject to} & \notag{}
 	\\
@@ -312,11 +315,19 @@ The AVRP formulation for the RRVRP can now be defined as:
 	\forall_{i \in V} & \quad \sum_{j \in V} x_{ij} = \sum_{j \in V} x_{ji}
 	\label{avrp:in-out}
 	\\
-	& \quad \sum_{j \in V} x_{0j} \leq U \label{avrp:upper-k} \\
-	& \quad \sum_{j \in V} x_{0j} \geq L \label{avrp:lower-k} \\
+	& \quad \sum_{j \in V} x_{v_0j} \leq U \label{avrp:upper-k} \\
+	& \quad \sum_{j \in V} x_{v_0j} \geq L \label{avrp:lower-k} \\
 	\forall_{i, j \in V} & \quad x_{ij} \in \{0, 1\}
 \end{align}
 
+Another formulation is provided in \citet{Baldacci06}. This paper does not
+assume, as the previous ones, that the trips to be serviced are predefined.
+Furthermore, it addresses the problem of having multiple disposal facilities
+and multiple inventory locations (where empty containers are stored). The
+authors named this as the \textit{Multiple Rollon-Rolloff Vehicle Routing
+Problem} (M-RRVRP). The M-RRVRP is converted to a \textit{Vehicle Routing
+Problem with Time Windows} (VRPTW). Then, the problem is modeled as a
+\textit{Set Partitioning} (SP) formulation.
 
 A similar problem is defined by \citet{Archetti05}, named \textit{1-Skip
 (container) Collection Problem} (1-SCP). Here, multiple disposal facilities are
@@ -329,22 +340,92 @@ to a compatible disposal facility. It then proceeds to another trip, with a new
 empty container. This model also considers time windows for picking up and
 emptying containers.
 
-The authors of \citet{Aringhieri04} also present an alternative definition for
-the Rollon-Rolloff model. 
+The authors of \citet{Aringhieri04} also present a rather interesting
+alternative for the Rollon-Rolloff model. They start by considering that
+there's a finite number of available empty containers at the depot, $K_C$, and
+compatibility constraints defined in the 1-SCP model are also present. Each
+request for collection $i \in I, I = {1, ..., n}$ is characterized by its location
+($\gamma_i$), container type ($\beta_{i}$) and waste material type ($\mu_i$). 
 
-Each request $i$ for waste collection is
-characterized by its location ($\gamma_i$), container type ($\beta_{i}$) and
-waste material type ($\mu_i$). 
+The graph model $G = (V, A)$ defines its vertices as representations of
+collection requests. For each request $i$, there are two nodes $e_i$ and $f_i$
+in $V$, that represent the full container to be collected and an empty
+container to be delivered. As usual, we have a vertex $v_0$ representing the
+depot from where the vehicles must begin and end their tours. There are also
+$K_C$ vertices (the set $D^\prime$), representing the possible pickup of an empty
+container at the depot, and $K_C$ vertices (the set $D^{\prime\prime}$) representing
+their delivery. No nodes will be added to represent the disposal facilities;
+this information will be embed in the graph arcs.
 
+Let $E = \{e_i : i \in I\}$, $F = \{f_i : i \in I\}$. Defining the set of
+vertices as $V = \{v_0\} \cup E \cup F \cup D^\prime \cup D^{\prime\prime}$, we
+now need to specify the arcs connecting them.
 
+There's an arc between $f_i \in F$ and $e_j \in E$ if both services have the
+same container type ($\beta_i = \beta_j$). These arcs correspond to picking up
+a full container at $\gamma_i$, taking it to a disposal facility of type
+$\mu_i$ for emptying and deploying it at location $\gamma_j$.
 
+Between every $e_i \in E$ and $f \in F$, we also have an arc. It represents
+deploying an empty container at location $\gamma_i$ and travelling to
+$\gamma_j$ to pick up its full container.
 
+At the start of a tour, a vehicle starts at the depot node, $v_0$, unloaded.
+From here, there are two alternatives: it travels to a location with a full
+container or it picks up an empty container. These operations are represented
+by the arcs $(v_0, f), f \in F$ and $(v_0, d^\prime), \in D^\prime$.
+Analogously, we have the arcs that represent unloading an empty container and
+finishing the tour. These arcs are defined by $(e, v_0), e \in E$ and
+$(d^{\prime\prime}, v_0), d^{\prime\prime} \in D^{\prime\prime}$.
 
+Picking up an empty container from the depot and deploying it is represented by
+the arcs $(d^\prime, e), d^\prime \in D^\prime \wedge e \in E$. Picking up a
+full container, emptying it at a disposal facility and dropping it at the depot
+is modeled by the arcs $(f, d^{\prime\prime}), f \in F \wedge d^{\prime\prime}
+\in D^{\prime\prime}$. Finally, we have the cases where a vehicle drops an
+empty container at the depot to pick up another empty one, of another type, or
+a full one: $(d^{\prime\prime}, d^\prime), d^{\prime\prime} \in
+D^{\prime\prime} \wedge d^\prime \in D^\prime$ and $(d^{\prime\prime}, f),
+d^{\prime\prime} \in D^{\prime\prime} \wedge f \in F$.
 
-\section{Approaches}
+To help clarify, an example graph is provided in figure~\ref{fig:avrp-rr}, with
+two requests and an empty container at the depot, all with the same type.
+Removing $v_0$, the graph should become bipartite, as a vehicle can only go
+from nodes from which it leaves loaded to a node from which he leaves unloaded.
 
-\subsection{Ant colony optimization}
+\begin{figure}[th]
+  \begin{center}
+    \leavevmode
+    \input{figures/avrp-rr}
+    \caption{Graph for the Rollon-Rolloff problem. Thick vertices (except
+    $v_0$) represent nodes from which the vehicle leaves loaded. Thin vertices
+    are the ones from which it leaves unloaded.}
+    \label{fig:avrp-rr}
+  \end{center}
+\end{figure}
 
+This can now be modeled as an instance of AVRP. The costs $c_{ij}$ associated
+with each arc are further detailed in \citet{Aringhieri04}.  We define
+$\delta^+(v)$ as the out-neighbourhood of $v$ and $\delta^-(v)$ as its
+in-neighbourhood. Without the time constraints, we obtain the following
+formulation:
 
-\footnote{Exemplo de nota de rodapé.}
+\begin{align}
+	\mbox{Minimize} & \quad K_A \sum_{(i, j) \in A} c_{ij} x_{ij} +
+				K_B \sum_{j \in \delta^-(v_0)} x_{v_0j}
+	\\
+	\mbox{subject to} & \notag{}
+	\\
+	\forall_{i \in F \cup E} & \quad \sum_{j \in \delta^+(i)} x_{ij} = 1
+	\label{avrp-rr:indegree}
+	\\
+	\forall_{i \in V} & \quad \sum_{j \in \delta^+(i)} x_{ij} = \sum_{j \in \delta^-(i)} x_{ji}
+	\label{avrp-rr:in-out}
+	\\
+	& \quad \sum_{j \in V} x_{0j} \leq U \label{avrp-rr:upper-k} \\
+	& \quad \sum_{j \in V} x_{0j} \geq L \label{avrp-rr:lower-k} \\
+	\forall_{i \in D^\prime \cup D^{\prime\prime}} & \quad \sum_{j \in \delta^+(i)} x_{ij} \leq 1 \\
+	\forall_{i, j \in V} & \quad x_{ij} \in \{0, 1\}
+\end{align}
+
 
