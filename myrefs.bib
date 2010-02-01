@@ -8,6 +8,34 @@
  YEAR=2005
 }
 
+@manual{Teutenberg03,
+	author = {Teutenberg, J.},
+	title = {Random Map Generator 1.0 --- User's Guide},
+	year = {2003}
+}
+
+@article{bentley-ottman,
+	author = {Bentley, J. L. and Ottmann, T. A.},
+	title = {{Algorithms for Reporting and Counting Geometric Intersections}},
+	journal = {IEEE Trans. Comput.},
+	volume = {28},
+	number = {9},
+	year = {1979},
+	pages = {643--647},
+	publisher = {IEEE Computer Society},
+	address = {Washington, DC, USA}
+}
+
+@article{Beltrami74,
+	author={{Beltrami, E.J., Bodin, L.D.}},
+	title={{Networks and Vehicle Routing for Municipal Waste Collection}},
+	journal={Networks},
+	year={1974},
+	volume={4},
+	number={1},
+	pages={65-94}
+}
+
 @manual{rmg:user-guide,
 	author = {Teutenberg, J.},
 	title = {{Random Map Generator 1.0 --- User's Guide}},
@@ -144,16 +172,57 @@
 	pages={1133-1149}
 }
 
-@inproceedings{Golden01,
-	author = {Golden, B. L. and Assad, A. A. and Wasil, E. A.},
-	title = {{Routing vehicles in the real world: applications in the solid waste, beverage, food, dairy, and newspaper industries}},
-	booktitle = {The vehicle routing problem},
-	year = {2001},
-	isbn = {0-89871-498-2},
-	pages = {245--286},
-	publisher = {Society for Industrial and Applied Mathematics},
-	address = {Philadelphia, PA, USA},
+%%%%%%% Arc routing problem
+
+@article{Euler1736,
+	author = {Euler, Leonhard},
+	year = "1736",
+	title = {{Solutio problematis ad geometriam situs pertinentis}},
+	journal = {{Comment. Academiae Sci. J. Petropolitanae}}
+	volume= 8,
+	pages= "128-140"
 }
+@article{Golden81,
+	author={Golden, Bruce L., Wong, Richard T.},
+	title={Capacitated Arc Routing Problems},
+	journal={Networks},
+	year={1981},
+	volume={11},
+	number={3},
+	pages={305-315}
+}
+
+@incollection{Assad95,
+	title = "Chapter 5 Arc routing methods and applications",
+	editor = "M.O. Ball, T.L. Magnanti, C.L. Monma and G.L. Nemhauser",
+	booktitle = "Network Routing",
+	publisher = "Elsevier",
+	year = "1995",
+	volume = "8",
+	pages = "375 - 483",
+	series = "Handbooks in Operations Research and Management Science",
+	issn = "0927-0507",
+	doi = "DOI: 10.1016/S0927-0507(05)80109-4",
+	url = "http://www.sciencedirect.com/science/article/B7P6G-4FKY22V-R/2/cfbde2442de744fc62dd08770e392f2e",
+	author = "Arjang A. Assad and Bruce L. Golden"
+}
+
+@book{Dror00,
+	title = {{Arc Routing: Theory, Solutions and Applications}},
+	year = 2000,
+	editor = {{Moshe Dror}}
+}
+
+@book{Wohlk08,
+	author = {{Sanne Wøhlk}},
+	title = {{A Decade of Capacitated Arc Routing}},
+	booktitle = {{The Vehicle Routing Problem: Latest Advances and New Challenges}},
+	editor = {{Bruce L. Golden, S. Raghavan, Edward A. Wasil}}
+	pages = "29-48",
+	year = 2008
+}
+
+
 @article{Corberan2002887,
 	title = {{The Rural Postman Problem on mixed graphs with turn penalties}},
 	journal = {{Computers \& Operations Research}},
@@ -172,7 +241,6 @@
 	keywords = "Metaheuristics"
 }
 
-
 @article{Belenguer98,
 	author = {Belenguer, J. M. and Benavent, E.},
 	title = {{The Capacitated Arc Routing Problem: Valid Inequalities and Facets}},
@@ -187,15 +255,112 @@
 	address = {Norwell, MA, USA}
 }
 
-@inproceedings{Sniezek01,
-	author = {Sniezek, J. and Bodin, L. and Levy, L. and Ball, M.},
-	title = {{Capacitated arc routing problem with vehicle-site dependencies: the Philadelphia experience}},
-	booktitle = {The vehicle routing problem},
+@article{Belenguer03,
+	title = "A cutting plane algorithm for the capacitated arc routing problem",
+	journal = "Computers \& Operations Research",
+	volume = "30",
+	number = "5",
+	pages = "705 - 728",
+	year = "2003",
+	note = "",
+	issn = "0305-0548",
+	doi = "DOI: 10.1016/S0305-0548(02)00046-1",
+	url = "http://www.sciencedirect.com/science/article/B6VC5-45CN6Y0-1/2/99fb3cf347067accd5617c0b1dbf9d40",
+	author = "José M. Belenguer and Enrique Benavent",
+	keywords = "Arc routing",
+	keywords = "Postman problems",
+	keywords = "Lower bounds"
+}
+
+@article{Belenguer06,
+	title = "Lower and upper bounds for the mixed capacitated arc routing problem",
+	journal = "Computers \& Operations Research",
+	volume = "33",
+	number = "12",
+	pages = "3363 - 3383",
+	year = "2006",
+	note = "Part Special Issue: Recent Algorithmic Advances for Arc Routing Problems",
+	issn = "0305-0548",
+	author = "José-Manuel Belenguer and Enrique Benavent and Philippe Lacomme and Christian Prins",
+}
+
+@article{Gouveia10,
+	title = "Lower bounds for the mixed capacitated arc routing problem",
+	journal = "Computers \& Operations Research",
+	volume = "37",
+	number = "4",
+	pages = "692 - 699",
+	year = "2010",
+	note = "",
+	issn = "0305-0548",
+	author = "Luís Gouveia and Maria Cândida Mourão and Leonor Santiago Pinto",
+	keywords = "Mixed capacitated arc routing",
+	keywords = "Formulations",
+	keywords = "Lower bounds"
+}
+
+@book{Toth01book,
+	author = {Toth, P. and Vigo, D.},
+	title = {The vehicle routing problem},
 	year = {2001},
 	isbn = {0-89871-498-2},
 	pages = {287--308},
 	publisher = {Society for Industrial and Applied Mathematics},
 	address = {Philadelphia, PA, USA},
+}
+
+@inbook{Sniezek01,
+	author = {Sniezek, J. and Bodin, L. and Levy, L. and Ball, M.},
+	title = {{Capacitated arc routing problem with vehicle-site dependencies: the Philadelphia experience}},
+	pages = {287--308},
+	crossref = {Toth01book}
+}
+
+@inbook{Toth01,
+	author = {Toth, P. and Vigo, D.},
+	title = {An overview of vehicle routing problems},
+	pages = {1--26},
+	crossref = {Toth01book},
+}
+
+@inbook{Naddef01,
+	author = {Naddef, D. and Rinaldi, G.},
+	title = {{Branch-and-cut algorithms for the capacitated VRP}},
+	pages = {53--84},
+	crossref = {Toth01book}
+}
+
+@inbook{Laporte01,
+	author = {Laporte, G. and Semet, F.},
+	title = {{Classical heuristics for the capacitated VRP}},
+	pages = {109--128},
+	crossref = {Toth01book}
+}
+
+@article{Gendreau01,
+	author = {Gendreau, M. and Laporte, G. and Potvin, J.-Y.},
+	title = {{Metaheuristics for the capacitated VRP}},
+	pages = {129--154},
+	crossref = {Toth01book}
+ }
+
+@inbook{Golden01,
+	author = {Golden, B. L. and Assad, A. A. and Wasil, E. A.},
+	title = {{Routing vehicles in the real world: applications in the solid waste, beverage, food, dairy, and newspaper industries}},
+	pages = {245--286},
+	crossref = {Toth01book}
+}
+
+@book{CSAM76,
+	title = {{Case Studies in Applied Mathematics}},
+	year = 1976,
+}
+@inbook{Tucker76,
+	author = {Tucker, A.},
+	author = {Bodin, L.},
+	title = {{A model for municipal street sweeping operations}},
+	pages = "107-150",
+	crossref = {CSAM76}
 }
 
 @article{Kim06,
@@ -214,36 +379,6 @@
 	keywords = "Vehicle routing problems with time windows",
 	keywords = "Capacitated clustering"
 }
-
-@article{Teixeira04,
-	author={Teixeira, Joao and Antunes, Antonio Pais and de Sousa, Jorge Pinho},
-	title={{Recyclable waste collection planning--a case study}},
-	journal={European Journal of Operational Research},
-	year=2004,
-	volume={158},
-	number={3},
-	pages={543-554},
-	month={November},
-	keywords={},
-	abstract={No abstract is available for
-	this item.},
-	url={http://ideas.repec.org/a/eee/ejores/v158y2004i3p543-554.html}
-}
-
-@article{Aringhieri04,
-	title = {{An asymmetric vehicle routing problem arising in the collection and disposal of special waste}},
-	journal = "Electronic Notes in Discrete Mathematics",
-	volume = "17",
-	number = "",
-	pages = "41 - 47",
-	year = "2004",
-	note = "Workshop on Graphs and Combinatorial Optimization",
-	issn = "1571-0653",
-	doi = "DOI: 10.1016/j.endm.2004.03.011",
-	url = "http://www.sciencedirect.com/science/article/B75GV-4FXV41J-C/2/905ccf062da25c486cdd750c8f4f21cb",
-	author = "Roberto Aringhieri and Maurizio Bruglieri and Federico Malucelli and Maddalena Nonato"
-}
-
 
 %%%%%%% Rollon-Rolloff
 
@@ -294,17 +429,6 @@
 
 %%%%%%% Vehicle Routing Problem
 
-@inproceedings{Toth01,
-	author = {Toth, P. and Vigo, D.},
-	title = {An overview of vehicle routing problems},
-	booktitle = {The vehicle routing problem},
-	year = {2001},
-	isbn = {0-89871-498-2},
-	pages = {1--26},
-	publisher = {Society for Industrial and Applied Mathematics},
-	address = {Philadelphia, PA, USA}
-}
-
 @inproceedings{Archetti05,
 	author = {Archetti, M.G. Speranza},
 	title = {{Collection of waste with single load trucks: a real case}},
@@ -326,3 +450,147 @@
 	editor = {{Curzio, A.Q., Prosperetti, L., Zoboli, R.}},
 	address = {Amsterdam}
 }
+
+%%%%%%% Waste collection studies
+
+@article{Teixeira04,
+	author={Teixeira, Joao and Antunes, Antonio Pais and de Sousa, Jorge Pinho},
+	title={{Recyclable waste collection planning--a case study}},
+	journal={European Journal of Operational Research},
+	year=2004,
+	volume={158},
+	number={3},
+	pages={543-554},
+	month={November},
+	keywords={},
+	abstract={No abstract is available for
+	this item.},
+	url={http://ideas.repec.org/a/eee/ejores/v158y2004i3p543-554.html}
+}
+
+@article{Aringhieri04,
+	title = {{An asymmetric vehicle routing problem arising in the collection and disposal of special waste}},
+	journal = "Electronic Notes in Discrete Mathematics",
+	volume = "17",
+	number = "",
+	pages = "41 - 47",
+	year = "2004",
+	note = "Workshop on Graphs and Combinatorial Optimization",
+	issn = "1571-0653",
+	doi = "DOI: 10.1016/j.endm.2004.03.011",
+	url = "http://www.sciencedirect.com/science/article/B75GV-4FXV41J-C/2/905ccf062da25c486cdd750c8f4f21cb",
+	author = "Roberto Aringhieri and Maurizio Bruglieri and Federico Malucelli and Maddalena Nonato"
+}
+
+@article{Pandit95,
+	title = {{A capacitated general routing problem on mixed networks}},
+	journal = {{Computers \& Operations Research}},
+	volume = "22",
+	number = "5",
+	pages = "465 - 478",
+	year = "1995",
+	issn = "0305-0548",
+	doi = "DOI: 10.1016/0305-0548(94)00035-7",
+	author = "Ram Pandit and B. Muralidharan"
+}
+
+@article{Cesar02,
+	title = {The Capacitated General Routing Problem on Mixed Graphs},
+	author = {Julio César and Angel Gutiérrez and David Soler and Antonio Hervás},
+	journal = {Investigaciones Operacionales},
+	year = 2002,
+	volume = 23,
+	pages = "15-26"
+}
+
+@article{Edmonds73,
+	journal = {{Mathematical Programming}},
+	title = {{Matching, Euler tours and the Chinese postman}},
+	volume = 5,
+	pages = "88-124",
+	author = {{Jack Edmonds}},
+	author = {{Ellis L. Johnson}}
+	year = 1973
+}
+
+@article{Ralphs01,
+	title = {Capacitated Node Routing Problems (Preliminary Progress Report)},
+	author = {T. K. Ralphs and J. C. Hartman},
+	year = {2001}
+}
+
+@article{Letchford99,
+	title = "The general routing polyhedron: A unifying framework",
+	journal = "European Journal of Operational Research",
+	volume = "112",
+	number = "1",
+	pages = "122 - 133",
+	year = "1999",
+	note = "",
+	issn = "0377-2217",
+	doi = "DOI: 10.1016/S0377-2217(97)00377-9",
+	url = "http://www.sciencedirect.com/science/article/B6VCT-3YSXJP1-X/2/7ab6fb0e72a497da5bf92420481f86cf",
+	author = "Adam N. Letchford",
+	keywords = "Polyhedra",
+	keywords = "Valid inequalities",
+	keywords = "General routing problem"
+}
+
+@inproceedings{Colorni91,
+	author = {Colorni, Alberto and Dorigo, Marco and Maniezzo, Vittorio},
+	booktitle = {European Conference on Artificial Life},
+	pages = {134--142},
+	title = {Distributed Optimization by Ant Colonies},
+	year = {1991}
+}
+
+
+
+
+@article{Rovetta09,
+	title = {{Early detection and evaluation of waste through sensorized containers for a collection monitoring application}},
+	journal = "Waste Management",
+	volume = "29",
+	number = "12",
+	pages = "2939 - 2949",
+	year = "2009",
+	note = "",
+	issn = "0956-053X",
+	doi = "DOI: 10.1016/j.wasman.2009.08.016",
+	url = "http://www.sciencedirect.com/science/article/B6VFR-4X962SC-3/2/9017e1eaa341204691998dc61e2d70df",
+	author = "Alberto Rovetta and Fan Xiumin and Federico Vicentini and Zhu Minghua and Alessandro Giusti and He Qichang"
+}
+
+@article{Vicentini09,
+	title = "Sensorized waste collection container for content estimation and collection optimization",
+	journal = "Waste Management",
+	volume = "29",
+	number = "5",
+	pages = "1467 - 1472",
+	year = "2009",
+	note = "First international conference on environmental management, engineering, planning and economics",
+	issn = "0956-053X",
+	doi = "DOI: 10.1016/j.wasman.2008.10.017",
+	url = "http://www.sciencedirect.com/science/article/B6VFR-4V69JDD-1/2/6ff868f79178667249bf19fc5eae9327",
+	author = "F. Vicentini and A. Giusti and A. Rovetta and X. Fan and Q. He and M. Zhu and B. Liu"
+}
+
+
+
+
+@article{Johansson06,
+	title = "The effect of dynamic scheduling and routing in a solid waste management system",
+	journal = "Waste Management",
+	volume = "26",
+	number = "8",
+	pages = "875 - 885",
+	year = "2006",
+	note = "",
+	issn = "0956-053X",
+	doi = "DOI: 10.1016/j.wasman.2005.09.004",
+	url = "http://www.sciencedirect.com/science/article/B6VFR-4HHP3DK-2/2/07ed1b7f0ffac5d896ca56622f4d2e8a",
+	author = "Ola M. Johansson"
+}
+
+
+

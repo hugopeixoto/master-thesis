@@ -1,0 +1,16 @@
+%some macro definitions
+
+% format
+\newcommand{\class}[1]{{\normalfont\slshape #1\/}}
+
+% entities
+\newcommand{\Feup}{Faculdade de Engenharia da Universidade do Porto}
+\newcommand{\osm}{OpenStreetMap.org}
+
+% Gantt
+\newcommand\ganttline[4]{% line, tag, start end
+\node at (0,#1) [anchor=base east] {#2};
+\fill[gray] (#3/15,#1-.2) rectangle (#4/15,#1+.2);
+\draw[black,thick] (#3/15,#1-.2) rectangle (#4/15,#1+.2);}
+
+

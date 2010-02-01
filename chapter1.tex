@@ -3,7 +3,8 @@
 \section*{}
 
 
-\section{Context}
+\section{Context and Motivation}
+\label{section:context}
 
 Municipal solid waste (MSW) production has been increasing in the last few
 years, along with economic growth\citep{McCarthy94}. This has led to the need
@@ -29,20 +30,82 @@ due to changes in the legislation. In 2006, \citet{Magrinho20061477} further
 report the legislation trends and present some statistics on the average MSW
 generation rate. Concerning collection routing, \citet{Teixeira04} describes a
 study for optimizing the collection of urban recyclable waste in the
-center-littoral region of Portugal.
+centre-littoral region of Portugal.
 
 
-\section{Project(?)}
-Description of the project, with the containers sensors and such.
+\section{Fill Status Monitoring}
+\label{section:monitoring}
 
-\section{Document structure}
+The Municipality of Porto, Portugal, is working together with the Fraunhofer
+Portugal Research Center for Assistive Information and Communication Solutions
+(FhP-AICOS) in order to implement a platform that allows the real-time
+measurement of waste containers' fill status. This requires the deployment of
+low cost sensors in each container and the development of a communication
+system to gather information. On top of this platform, several applications
+will then be possible. As an example, this will allow researchers to study
+waste generation behaviours on a more detailed level. These monitoring systems
+have been studied in places, such as Pudong New Area, in Shanghai,
+China\citep{Rovetta09,Vicentini09} and Sweden\citep{Johansson06}.
+
+Another application for this system is the optimisation of waste collection
+routes.
+
+\section{Optimisation of Waste Collection Routes}
+
+The problem of optimising waste collection routes involves deciding, for
+example, which streets must each garbage truck follow, which containers should
+each one of them collect and how many trucks should a fleet for a given city
+have.
+
+One of the first articles regarding this subject was done in
+1974\citep{Beltrami74}, and it was applied to both New York and Washington
+D.C., United States of America. Since then, several other cities have tried to
+minimise the costs involving waste collection: Trabon,
+Turkey\citep{Apaydin2007}; Barcelona, Spain\citep{Bautista2004}; Athens,
+Greece\citep{Karadimas2005}; Hanoi, Vietnam\citep{Tung2000}; Porto Alegre,
+Brazil\citep{Li2008} and many others. 
+
+However, many of these studies do not have real-time information of the
+containers' fill status. Usually, they are either based on statistical data
+(surveys), or they ignore the containers' fill status and simply collect the
+waste in every container.
+
+Combining these techniques with the \textit{Fill Status Monitoring} platform
+described in section~\ref{section:monitoring}, the municipality of Porto,
+Portugal might reduce even further the collection costs. The main objective of
+this work is to develop a solution for route optimisation based on the
+previously presented platform.
 
 
-Chapter~\ref{chap:sota} starts by describing the optimization of collection
-routing mathematically, along with several techniques used to solve this
-problem.
 
-%Chapter~\ref{chap:proposed} provides details on the scenario being
-%studied
+\section{Objectives}
+\label{section:objectives}
 
+With the deployment of a fill status monitoring solution in the municipality
+of Porto, there is the need to develop an optimisation framework for the
+waste collection routes.
+
+There are two scenarios that will need optimisation. First, there is a
+scenario similar to the \textit{Rollon-Rolloff} scenario. Second, a
+\textit{commercial} scenario will also be evaluated. The difference between
+these can be seen in Chapter~\ref{chap:sota}.
+
+Other than the optimisation process, there is also the need to develop an
+architecture to store and retrieve, when necessary, the information obtained
+from the fill sensors.
+
+
+\section{Organisation}
+
+Chapter~\ref{chap:sota} starts by presenting the optimisation of collection routes.
+First, an informal description of each scenario is given. Then, each one of the
+scenarios is exposed as a mathematical formulation, followed by possible
+techniques that can be applied to them.
+
+Chapter~\ref{chap:approach} introduces the optimisation framework being
+developed. Three modules are proposed and detailed, and the progress on each
+one is presented.
+
+Chapter~\ref{chap:work} presents a work plan for the project.  The work plan
+contains both the specification of the tasks, as well as a calendarisation.
 
