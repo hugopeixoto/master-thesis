@@ -6,6 +6,7 @@
 % entities
 \newcommand{\Feup}{Faculdade de Engenharia da Universidade do Porto}
 \newcommand{\osm}{OpenStreetMap.org}
+\newcommand{\fhp}{Fraunhofer Portugal AICOS}
 
 % Gantt
 \newcommand\ganttline[4]{% line, tag, start end
@@ -13,4 +14,14 @@
 \fill[gray] (#3/15,#1-.2) rectangle (#4/15,#1+.2);
 \draw[black,thick] (#3/15,#1-.2) rectangle (#4/15,#1+.2);}
 
-
+% Database 
+\newcommand\drawdatabase[4]{% label, x, y, text
+\begin{scope}
+  \draw[color=black, draw=black, very thick] (#2, #3+0.875cm) ellipse (1cm and 0.3cm);
+  \draw[color=black, draw=black, very thick] (#2-1cm, #3+0.875cm) -- (#2-1cm, #3-0.375cm);
+  \draw[color=black, draw=black, very thick] (#2+1cm, #3-0.375cm) -- (#2+1cm, #3+0.875cm);
+  \node (#1) at (#2,#3) {\parbox{2cm}{\begin{center}#4\end{center}}};
+  \clip (#2-1cm,#3-0.375cm) rectangle (#2+1cm, #3-1cm);
+  \draw[color=black, draw=black, very thick] (#2, #3-0.375cm) ellipse (1cm and 0.3cm);
+\end{scope}
+}

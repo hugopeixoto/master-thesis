@@ -1,0 +1,24 @@
+
+\usetikzlibrary[positioning]
+\usetikzlibrary{shapes.misc}
+\tikzstyle{every entity} = [color=black,draw=black]
+
+\begin{tikzpicture}[>=stealth']
+
+\drawdatabase{osm}{-4cm}{-0.625cm}{OpenStreet Map}
+\drawdatabase{sensordata}{-4cm}{-5cm}{Sensor Data}
+
+\node[entity] (citygen) [above=of osm] {\parbox{2cm}{\begin{center}City random generator\end{center}}};
+\node[entity] (retriever) [right=of sensordata] {Retriever};
+\node[document] (citymap) [below=of citygen,above=of osm,right=of osm] {\parbox{0.5cm}{\begin{center}City map\end{center}}};
+\node[entity] (containergen) [below=of citygen,right=of citymap] {\parbox{2cm}{\begin{center}Container random generator\end{center}}};
+\node[document] (containerdata) [below=of containergen] {\parbox{1cm}{\begin{center}Container data\end{center}}};
+
+\draw (citygen) edge [->] (citymap);
+\draw (osm) edge [->] (citymap);
+\draw (citymap) edge [->] (containergen);
+\draw (sensordata) edge [->] (retriever);
+\draw (retriever) edge [->] (containerdata);
+\draw (containergen) edge [->] (containerdata);
+
+\end{tikzpicture}

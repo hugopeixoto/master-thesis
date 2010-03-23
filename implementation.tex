@@ -1,27 +1,8 @@
-%\chapter{Work Plan}\label{chap:work}
-\chapter{Approach}
-\label{chap:approach}
+\chapter{Implementation}
+\label{chap:implementation}
 
 \section*{}
-
-The framework development has already been started. This chapter details the
-work done so far, along with 
-The optimisation framework is currently divided into three main modules.
-
-The first module --- described in section~\ref{section:map-generation} ---
-regards the generation or retrieval of a problem set. This involves obtaining a
-city map, determining containers' locations and associating them with the
-current fill status. 
-
-The second module refers to the actual route optimisation, which is made using
-a stochastic route simulation to introduce randomness --- representing
-fluctuations in the vehicles' speed, for example. Details referring this module
-are given in section~\ref{section:simulation}.
-
-There is the need for an analysis and visualization module that takes the
-output from the optimisation module and displays it in a human-viewable
-fashion, along with several statistics. This module is presented in
-section~\ref{section:visualisation}.
+Here be dragons.
 
 \section{Map generation and retrieval}
 \label{section:map-generation}
@@ -39,6 +20,9 @@ Section~\ref{section:roborescue}.
 I also developed a more realistic approach, described in
 Section~\ref{section:osm}  --- a procedure which allows the importation of city
 maps from OpenStreetMap.org.
+
+
+
 
 \subsection{RoboCup Rescue Random City Generation}
 \label{section:roborescue}
@@ -95,6 +79,7 @@ compared.
 
 
 
+
 \subsection{\osm{} Data Retrieval}
 \label{section:osm}
 
@@ -115,6 +100,8 @@ imported from \osm{}.
 
 
 
+
+
 \subsection{Stochastic waste generation parameters}
 \label{section:parameters}
 
@@ -131,84 +118,5 @@ and data on kilograms per capita per day.
 
 
 
-
-
-
-
-
-\section{Route Optimisation and Evaluation}
-\label{section:simulation}
-
-Before applying the optimisation techniques to the real world scenario, several
-tests need to be done, comparing several algorithms. These tests will be
-executed on a simulator, whose behaviour is defined in this section.
-
-The simulation process starts by loading the problem set and connecting ---
-through a network socket -- to the optimiser, which implements the optimisation
-algorithm. The choice of using a network socket was made to keep these two
-components completely independent, in order not to hinder the development of
-new optimisation techniques.
-
-The communication protocol between these two components is simple. The
-simulator starts by sending the city map to the optimiser. Afterwards, for each
-day of simulation, the simulator sends the containers' state to the optimiser
-and receives the routes to apply, at the end of the day. This is depicted in
-figure~\ref{fig:protocol}, with steps 2 and 3 being executed once for each day.
-
-\begin{figure}[th]
-\centering
-\input{figures/simulation_protocol}
-\caption{Communication protocol during the simulation}
-\label{fig:protocol}
-\end{figure}
-
-Routes received from the optimiser are composed by a set of intersection
-points the vehicle must follow. For each road segment, the simulator
-determines the vehicle speed, following a normal distribution --- which will
-be configurable. This provides the simulation with some reality and
-nondeterminism. 
-
-This will cause situations like the ones described at the end of
-Section~\ref{section:problem}, in which a vehicle has to wait for another one
-to finish a given task.
-
-The time it takes for a vehicle to empty or load a container is also
-determined by a normal distribution.
-
-Each event, timestamp and vehicle speed is registered in a log file, for
-further inspection and evaluation. The routes are also registered, as well as
-the average distance per day.
-
-
-
-
-
-
-\section{Visualisation}
-\label{section:visualisation}
-
-After obtaining the log file from the simulation module, one can check the
-collection process in the viewer, step by step. For example, it is possible
-to verify, in the replacement variation, when a vehicle is idling, waiting
-for another one. A screenshot of the current viewer's prototype is available
-in figure~\ref{fig:simulation}.
-
-\begin{figure}[h]
-\centering
-\includegraphics[width=0.75\textwidth]{simulation.png}
-\caption{Screenshot of the viewer, showing a container (black, smaller circle)
-and three vehicles in different states. Green: moving, white: finished, orange:
-collecting the waste.}
-\label{fig:simulation}
-\end{figure}
-
-This viewer can easily be extended to read and display extra information from
-the log file, such as other performance metrics. Currently, it also supports
-the functionality of loading a stand alone city map, so that inconsistencies
-may be detected before running the optimisation procedures.
-
-The next steps include creating a front-end to place the containers' around
-the city and to display detailed information regarding the optimisation
-process.
 
 
