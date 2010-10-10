@@ -1,0 +1,74 @@
+\chapter{Problem description}
+\label{chap:problem}
+
+This chapter provides a description of the problem being addressed.
+
+
+\section{Waste collection in Porto, Portugal}
+\label{section:wcpp}
+
+The municipal council of the city of Porto is interested in implementing a
+platform that measures the fill status of the containers in real-time, so that
+the evolution of waste can be monitored, the quality and efficiency of the
+collection can be increased, and the sums paid to subcontractor companies by
+amount of km traveled each month reduced. The system should work as follows:
+containers send an alarm when they are full, and everyday in the evening the
+waste collection routes are calculated with the static values available at a
+certain time.
+
+This project's scope is to build a framework that stores container fill status
+and that uses that information to calculate efficient collection routes. Routes
+have to be provided every day, based on recent fill information; although there
+is no need to calculate routes in real-time, a solution must be provided within
+1 to 2 hours. This constraint requires that an efficient solution is found
+within that time frame for graphs of large cities, which are composed of
+several thousand vertices. To decide which algorithm should be used to
+calculate the routes, it was necessary to do a comparative study to evaluate
+the performance of several techniques.
+
+As stated in the previous chapter, a residential waste collection scenario is
+modeled as a \textit{Capacitated Arc Routing Problem} (CARP), due to high number
+of containers per street. CARP consists of, in summary, finding a set of vehicle
+routes that visit a subset of a given graph's arcs. With each arc, there is an
+associated demand, which must be serviced by exactly one vehicle. The sum of
+the demands that a given vehicle services must not exceed a fixed limit.
+
+Although residential waste collection scenarios are usually modeled as a CARP,
+it must be taken into account that in Porto, containers service several homes
+and that containers fill status will be monitored. With this in mind, it becomes
+more natural to use a \textit{Asymmetric Capacitated Vehicle Routing Problem}
+(ACVRP) model.  This model is similar to that of CARP, with a simple difference:
+instead of servicing arcs, in ACVRP vehicles must service vertices instead.
+
+
+\section{Asymmetric capacitated vehicle routing problem}
+\label{section:problem-cvrp}
+
+As exposed in the previous chapter, there are three non-exact methods to address
+the \textit{Asymmetric Capacitated Vehicle Routing Problem}. One of them,
+\textit{route-first-cluster-second}, first solves the associated
+\textit{Asymmetric Traveling Salesman Problem} (ATSP); this implies finding the
+shortest tour that visits every vertice exactly once. This process is followed
+by the partitioning of the tour into routes that respect vehicle capacity
+constraints (henceforth called clustering).
+
+Another method, \textit{cluster-first-route-second}, first clusters the
+containers and then attempts to find an optimum route for each cluster. This
+method usually requires that one predefines the number of vehicles to use.
+
+The third method to address the ACVRP is to use constructive heuristics, that
+build all the vehicle routes in parallel.
+
+This work will focus on the comparison of the first and third methods, using
+different approaches to solve the ATSP. Additionally, special focus will be
+given to the \textit{MAX-MIN ant system} (MMAS) --- which is described in
+section~\ref{section:mmas} --- and its sensibility to certain parameters.
+
+\section{Chapter summary}
+
+This chapter summarized the motivation, goals and approach of this project. The
+next chapter will focus on the definition of the architecure for the waste
+sensor framework. It also presents the evaluation metrics and validation
+datasets to analyse the optimization process.
+
+

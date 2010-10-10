@@ -1,0 +1,87 @@
+
+\chapter*{Abstract}
+
+Fraunhofer Portugal Research Center for Assistive Information and Communication
+Solutions is currently developing a system to monitor the fill status of waste
+containers. The introduction of a waste container fill status monitoring system
+in the city of Porto, Portugal, gives rise to several opportunities. For
+example, it allows the development of a detailed analysis of the city's waste
+generation distribution and the optimization of waste collection routes.
+
+This document describes the architecture design of the information system to
+store and retrieve data regarding the containers' status. Furthermore, it
+provides a description of several algorithms that can be used to obtain
+efficient collection routes. This optimization problem is modeled as the
+\textit{Capacitated Vehicle Routing Problem}. To address this problem, two
+approaches were analyzed; the first involves solving the associated
+\textit{Asymmetric Traveling Salesman Problem} --- in which vehicle capacity
+constraints are ignored --- followed by clustering the resulting tour into
+feasible routes. This approach is called \textit{route-first-cluster-second}.
+The second approach relies on the usage of a construction heuristic by
+Clarke and Wright.
+
+Regarding the optimization of the \textit{Asymmetric Traveling Salesman Problem}
+solution, this study compares several techniques: two construction heuristics
+--- \textit{greedy} and \textit{repetitive nearest neighbor} --- and three
+meta-heuristics --- \textit{hill climbing}, \textit{genetic algorithms} and
+\textit{MAX-MIN ant system}. Additionally, \textit{MAX-MIN ant system} was
+subjected to a parameter sensibility analysis.
+
+Results show that \textit{MAX-MIN ant system} achieves more efficient routes
+when the number of ants is higher, although it increases the algorithm's running
+time.  When dealing with a scenario in which there is a limited time-frame, it
+is recommended that a low number of ants is used. The algorithm was also shown
+to be very sensitive to changes in parameter $\beta$, which indicates if an ant
+should give more importance to the distance between two vertices or to the
+pheromone levels in that arc. This analysis suggests that $\beta$ should be
+close to $20$.
+
+When evaluating the performance of the presented techniques applied to the
+\textit{Capacitated Vehicle Routing Problem}, \textit{MAX-MIN ant system}
+produced, in average, more efficient routes than the other approaches. 
+
+
+\chapter*{Resumo}
+
+O Centro de Pesquisa para Soluções de Informação e Comunicação Assistiva da
+Fraunhofer Portugal está a desenvolver um sistema de monitorização do estado de
+enchimento dos contentores de lixo. A introdução deste sistema na cidade do
+Porto dá origem a várias oportunidades. Por exemplo, torna-se possível fazer uma
+análise detalhada da distribuição da geração do lixo na cidade. Este projecto
+permite, também, implementar um sistema de optimização das rotas de recolha do
+lixo.
+
+Este documento descreve o desenho da arquitectura do sistema de informação que
+permitirá armazenar --- e disponibilizar --- a informação referente ao estado
+dos contentores. O documento oferece também uma descrição de vários algoritmos
+que podem ser utilizados para obter rotas de recolha eficientes. Este problema
+de optimização pode ser modelado como um problema de planeamento de rotas de
+veículos com capacidade limitada (CVRP).  Neste estudo, foram analisadas duas
+abordagens para a resolução do CVRP.  A primeira começa por resolver o problema
+do caixeiro viajante em grafos assimétricos (ATSP) --- ignorando as restrições
+de capacidade --- e, subsequentemente, divide o circuito obtido em rotas que
+respeitem as restrições de capacidade dos veículos. Esta técnica chama-se
+\textit{route-first-cluster-second}. A segunda abordagem para resolver o CVRP
+é baseada numa heurística construtiva, por Clarke e Wright.
+
+Relativamente ao problema de optimização do problema do caixeiro viajante em
+grafos assimétricos, foram comparadas várias técnicas: duas heurísticas
+construtivas --- \textit{gulosa} e \textit{vizinho mais próximo repetitivo} ---
+e três meta-heurísticas --- \textit{subir-a-colina}, \textit{algoritmos
+genéticos} e um sistema de formigas chamado \textit{MAX-MIN ant system} (MMAS).
+Além da comparação dos vários algoritmos entre si, foi também feita uma análise
+de sensibilidade aos parâmetros do MMAS.
+
+Os resultados mostram que o MMAS calcula rotas mais eficientes quando o número
+de formigas é mais elevado, apesar de levar a um aumento no tempo de execução do algoritmo.
+Quando aplicado a um cenário em que o tempo de execução disponível é limitado,
+é recomendado que se utilize um número reduzido de formigas. Também foi possível
+mostrar que o algoritmo é bastante sensível a variações no parâmetro $\beta$,
+que decide se uma formiga deve dar mais importância à distância entre dois
+vértices ou à quantidade de feromonas existente nesse arco. Esta análise mostrou
+que o parâmetro $\beta$ deve tomar valores perto de $20$.
+
+A análise do desempenho dos vários algoritmos, relativamente ao problema de
+planeamento de rotas de veículos de capacidade limitada, mostrou que o sistema
+de formigas obtém, em média, rotas mais eficientes. 
+

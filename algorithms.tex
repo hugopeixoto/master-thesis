@@ -1,0 +1,1089 @@
+\chapter{Algorithms}
+\label{chap:algorithms}
+
+\section*{}
+
+As seen in section~\ref{section:vrp-approaches}, one way to tackle the
+\textit{Asymmetric Capacitated Vehicle Routing Problem} is to first build a tour
+over graph $G$ and to divide it into routes that respect the vehicle capacity
+constraints. The problem of finding a tour in a directed graph is called
+\textit{Asymmetric Traveling Salesman Problem}.
+
+The first sections in this chapter describe several algorithms used for solving
+\textit{Asymmetric Traveling Salesman Problem} instances. A comparative
+analysis of their complexity is shown in section~\ref{section:complexity}.
+Section~\ref{section:clustering} presents an algorithm for dividing a tour ---
+a route that visits all vertices in a graph --- into several routes that
+respect vehicle capacity constraints.
+
+Section~\ref{section:validation} explains the process with which the implemented
+algorithms were validated. It reports the results regarding the benchmarks done
+using standard \textit{Asymmetric Traveling Salesman Problem} and
+\textit{Capacitated Vehicle Routing Problem} instances.
+
+This chapter shows the algorithms' characterization, by using asymptotic
+notation (also known as Bachmann-Landau notation) to represent bounds on time
+complexities. For a description of asymptotic notation used throughout this
+chapter, see~\citet{Knuth1976}.
+
+
+
+\section{Construction heuristics for the ATSP}
+\label{section:heuristics}
+
+Two classical construction heuristics for the ATSP are the \textit{nearest
+neighbor} and the \textit{greedy} heuristics~\citep{Gutin2002}.
+
+\textit{Nearest neighbor} (NN) starts by picking an arbitrary vertex, usually
+chosen at random. It proceeds by advancing to the nearest unvisited neighbor,
+until all vertices are visited. A tour is then completed by returning to the
+first visited vertex.  When applied to a complete graph --- where $|E| = |V|^2$
+--- this heuristic has a time complexity of $O(|V|^2)$. Instead of simply
+picking an arbitrary vertex at first, one can start NN from every vertex and
+return the best final tour. This variation is called \textit{repetitive nearest
+neighbor} (RNN)~\citep{Gutin2002}. Algorithm~\ref{algorithm:rnn} describes the
+\textit{repetitive nearest neighbor} heuristic. Lines 4 through 15 apply the
+nearest neighbor heuristic starting in vertex $v$.
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$ \\
+  \textbf{Output:} An ATSP route
+  \begin{algorithmic}[1]
+    \STATE $minimum \gets +\infty$
+    \STATE $best\_route \gets nil$
+    \FORALL[calculate the NN for each vertex]{v $\in$ V}
+      \STATE $route \gets []$
+      \STATE $current \gets v$
+      \WHILE{$|route| \neq |V|$}
+        \STATE{$route$.append($current$)}
+        \STATE{$closest \gets nil$}
+        \FORALL[determine the closest non-visited vertex]{w $\in$ V}
+          \IF{$w \not\in route \wedge (closest = nil \vee cost(v, w) < cost(v, closest))$}
+            \STATE $closest \gets w$
+          \ENDIF
+        \ENDFOR
+        \STATE $current \gets closest$
+      \ENDWHILE
+      \IF{$best\_route = nil \vee cost(route) < cost(best\_route)$}
+        \STATE $best\_route \gets route$
+      \ENDIF
+    \ENDFOR
+    \RETURN{$best\_route$}
+  \end{algorithmic}
+  \caption{Repetitive nearest neighbor heuristic}
+  \label{algorithm:rnn}
+\end{algorithm}
+
+The \textit{greedy} heuristic (GR) works in a similar way than that of Kruskal's
+minimum spanning tree algorithm~\citep{Kruskal1956}. It starts by creating an
+auxiliary directed graph with no arcs, $G^\prime = (V, \{\})$ and sorts all the
+arcs in $G$ by their weight, which are then iterated in ascending order. Each
+arc is added to $G^\prime$ if and only if its vertices are not already connected
+in $G^\prime$ and both the outdegree (number of outgoing arcs) of the source
+vertex and the indegree (number of incoming arcs) of the destination vertex are
+exactly $0$. This process will yield a spanning tree which can be converted to a
+tour by adding the arc that connects the only two vertices whose degree is less
+than $2$. Its time complexity is equal to that of Kruskal's algorithm:
+$\Theta(|E| log |E|)$. When dealing with a complete graph, where $|E| = |V|^2$,
+the time complexity can be expressed as $\Theta(|V|^2 log(|V|^2)) = \Theta(|V|^2
+log |V|)$.
+
+The pseudo-code for this heuristic is presented in
+algorithm~\ref{algorithm:greedy}. Two arrays, $prev$ and $next$, are used to
+maintain information about each vertex's incoming and outgoing connections. The
+$first$ and $last$ arrays serve to determine if two vertices are already
+connected or not.
+
+\newpage
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$ \\
+  \textbf{Output:} An ATSP route
+  \begin{algorithmic}[1]
+    \STATE{$prev \gets []$, $next \gets []$}
+    \STATE{$first \gets []$, $last \gets []$}
+    \STATE{$visited = 0$}
+    \FOR[initialization]{$i=0$ to $|V|-1$}
+      \STATE{$next$.append($-1$),}
+      \STATE{$prev$.append($-1$)}
+      \STATE{$first$.append($i$)}
+      \STATE{$last$.append($i$)}
+    \ENDFOR
+    \FOR[create the spanning tree]{\textbf{each} $(v, w) \in E$, in ascending $cost(v, w)$ order}
+      \IF{$visited < |V|-1 \wedge next[v] < 0 \wedge prev[w] < 0 \wedge last[w] \neq v \wedge first[v] \neq w$}
+        \STATE{$next[v] \gets w$}
+        \STATE{$prev[w] \gets v$}
+        \STATE{$first[last[w]] \gets first[v]$}
+        \STATE{$last[first[v]] \gets last[w]$}
+        \STATE{$visited \gets visited + 1$}
+      \ENDIF
+    \ENDFOR
+
+    \FORALL[retrieve the calculated route]{$v \in V$}
+      \IF{$prev[v] < 0$}
+        \STATE{$route \gets []$}
+        \WHILE{$v \geq 0$}
+          \STATE{$route.append(v)$}
+          \STATE{$v \gets next[v]$}
+        \ENDWHILE
+        \RETURN{$route$}
+      \ENDIF
+    \ENDFOR
+    \RETURN{nil}
+  \end{algorithmic}
+  \caption{Greedy heuristic}
+  \label{algorithm:greedy}
+\end{algorithm}
+
+\section{Hill climbing for the ATSP}
+\label{section:hill-climbing}
+
+\textit{Hill climbing}~\citep{Russel2003} is a greedy local search technique. It
+picks an initial solution and iterates through its neighborhood, looking for a
+solution with higher value. This process is repeated until a local minima
+\slash maxima is reached or the specified time limit is exceeded.
+\textit{first choice hill climbing} moves to the first solution whose value is
+higher, while \textit{steepest ascent hill climbing} evaluates all neighbors
+and moves to the one that provides greater improvement~\citep{Russel2003}. 
+
+When applying hill climbing to TSP instances, a solution's neighborhood is
+commonly defined by dividing the current tour into $k$ segments and recombining
+them in all possible ways that yield a valid tour. This transformation is
+called a $k-cut$, and the process of applying it in a hill-climbing fashion is
+called the $k-opt$. The most common versions are 2-opt and
+3-opt~\citep{Johnson1997} and an adaptive generalization that chooses, at each
+iteration, how many segments to form --- the Lin-Kernighan
+heuristic~\citep{Johnson1997}. The bigger the $k$, the greater the neighborhood.
+Given a route $r$, its neighborhood size $|N(r,k)|$ growth factor can be
+defined as $|N(r,k)| \in O(|V|^k)$.
+
+Segment recombination may include the reversal of one or more segments. In STSP
+instances, the cost of transversing a segment is the same as the cost of
+transversing its reversed form. This means that calculating the total cost of a
+recombined tour has an average time complexity of $\Theta(k)$, since one just
+needs to take into account $k$ edges that were removed and $k$ new edges that
+were added.
+
+In asymmetric instances, though, transversing a segment does not cost the same
+as transversing its reversed form. Calculating the total cost of a single
+recombined tour, in this scenario, has a worst time complexity of $\Theta(|V|)$.
+This would mean that when calculating the cost of all neighbors, time complexity
+would be $O(|V|^k) \cdot \Theta(|V|) = O(|V|^{k+1})$. However, the calculation
+of reversed segments' costs can be reused between neighbors. It is also possible
+to apply a dynamic programming technique to a given route $r$ that, after a
+pre-calculation that runs in $\Theta(|V|)$, allows us to calculate the cost of
+any reversed segment in $r$ in $\Theta(1)$. This reduces the time complexity
+upper bound from $O(|V|^{k+1})$ to $O(|V|^k + |V|) = O(|V|^k)$, which is
+significantly lower.  As city graphs used in the next chapters have a number of
+vertices in the range $[500, 8000]$, it was decided to use $k = 2$.
+
+The pseudo-code for this approach is presented in
+algorithm~\ref{algorithm:2-opt}. In each iteration (lines 2 through 18), all
+possible 2-cuts are generated (lines 4 through 12) and the one which yields the
+minimum cost is compared to the current route (lines 8 through 10 and 13 through
+17). If there is no improvement, the algorithm halts (lines 15 through 17).
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$ \\
+  \textbf{Output:} An ATSP route
+  \begin{algorithmic}[1]
+    \STATE{$route = heuristic(G)$}
+    \COMMENT{$heuristic$ can either refer to the RNN or the greedy heuristics}
+    \LOOP
+      \STATE{$best \gets route$}
+      \FOR[cut edge number $i$]{$i = 0$ to $|V|-1$}
+        \FOR[cut edge number $(i+k)\%|V|$]{$k = 2$ to $|V|-1$}
+          \STATE{$r \gets route + route$}
+          \STATE{$n \gets reverse(r[i,i+k]) + r[i+k+1,i+|V|]$}
+          \IF{$cost(n) < cost(best)$}
+            \STATE{$best \gets n$}
+          \ENDIF
+        \ENDFOR
+      \ENDFOR
+
+      \IF{$cost(best) < cost(route)$}
+        \STATE{$route \gets best$}
+      \ELSE[when a local minima is reached, stop the algorithm]
+        \RETURN{route}
+      \ENDIF
+    \ENDLOOP
+  \end{algorithmic}
+  \caption{Steep ascent hill climbing using a 2-cut neighborhood (2-opt
+  algorithm)}
+  \label{algorithm:2-opt}
+\end{algorithm}
+
+
+\newpage
+\section{Genetic algorithm for the ATSP}
+\label{section:genetic-algorithms}
+
+A genetic algorithm is a search technique based on evolutionary
+biology~\citep{Davis91handbookof}. This technique starts by defining an initial
+population of random solutions, which is considered as the first generation.
+Then, the evolution process follows. In this process, every individual in the
+current generation is evaluated and multiple individuals are stochastically
+selected according to their fitness and possibly modified to form the next
+generation. Usually, the best individuals from a generation, known as the
+elite, are moved to the next one directly, without suffering any
+modification~\citep{Russel2003}. The evolution process continues until a
+predefined termination condition has been satisfied. Modifications  of two
+types can be applied to the selected individuals: crossover and mutation. The
+crossover operator takes two or more individuals from the current population
+and combines their attributes to form an offspring. The mutation operator
+modifies some attributes of a single individual.
+
+There are several opinions on which modification operator --- crossover or
+mutation --- is more important~\citep{Navy1992}. Some consider crossover as the
+primary operator, with mutations serving only to prevent early
+convergence~\citep{Holland1992}. Others believe crossover is unnecessary and
+mutation alone is enough to develop more efficient searches~\citep{Fogel1990}.
+
+Several approaches of applying genetic algorithms to TSP have been studied,
+with different solution representations and modification operators. The genetic
+algorithm used throughout this work, presented in~\citet{Chatterjee1996},  is a
+mutation-only approach whose representation is simple (each solution is encoded
+by a vertex permutation) and whose modification operator is based on the
+Lin-Kernighan heuristic.
+
+First generation elements are initialized by using the \textit{nearest neighbor}
+heuristic. Then, for each solution in a generation, a number $k_i$ is chosen,
+following the discrete geometric distribution $P[X = k] = p^{k - 1}(1-p)$, with
+$p = 0.35$.  Modifications to the solution are made by applying a random,
+uniformly distributed, $(k_i + 1)$-cut. This method was originally applied to
+symmetric TSP instances, where recalculating a route's cost is faster (as
+explained in section~\ref{section:hill-climbing}). In this work, its performance
+when facing asymmetric datasets will be evaluated.
+
+To evaluate the time complexity of this algorithm, consider a single evolution
+iteration, with a population of $m$ individuals. Each individual suffers a
+$k-cut$ operation, whose running time is $\Theta(|V| + k)$, as explained below.
+All $m$ routes' costs have to be recalculated, so the total iteration running
+time is given by $\Theta(|V| + k + m|V|) = \Theta(m|V| + k)$. The expected
+value of $k$ is given by $E(X) + 1 = \dfrac{1}{p} + 1$.  With $p = 0.35$, $E(X)
++ 1 \approx 3.86$; this means that the average running time complexity of a
+single genetic algorithm iteration is $\Theta(m|V|)$.
+
+The mutation pseudo-code is presented in algorithm~\ref{algorithm:mutation}. Its
+inputs are parameter $p$ and the route to be mutated, $route$. It starts by
+determining the number of cuts to apply, using the geometric distribution $P[X =
+k]$. Then, it determines the places to apply the $k$ cuts, selecting $k$
+distinct edges from the total $|V|$ edges of the route (lines 7 through 17).
+This selection is done using an algorithm that runs in $\Theta(|V|)$, where each
+element has the same probability of being chosen.
+
+The route segments, obtained when applying the cuts, are shuffled to obtain a
+random recombination. This shuffling procedure, known as the Fisher-Yates
+shuffle, runs in $\Theta(k)$ (lines 18 through 20) and yields an unbiased
+permutation~\citep{Knuth1997b}. Finally, when recombining all the segments,
+each one of them has a $50\%$ probability of being reversed (lines 24 through
+30). This last step has a time complexity of $\Theta(|V| + k)$. As $k$ has an
+average value of $E(X)+1$, which is a constant, one can consider the mutation
+total running time as $\Theta(|V|+E(X)+1+(|V|+E(X)+1))$ = $\Theta(|V|)$.
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$, an ATSP $route$ and the parameter
+  $p$ \\
+  \textbf{Output:} A mutated route
+  \begin{algorithmic}[1]
+    \STATE{$k = 2$}
+    \STATE{$v = 1-p$}
+    \STATE{$r = random()$}
+    \COMMENT{random real value in the range $[0, 1[$}
+    \WHILE[determine $k$ according to a geometric distribution]{$v < r$}
+      \STATE{$k \gets k+1$, $r \gets r - v$, $v \gets v \cdot p$}
+    \ENDWHILE
+    \STATE{$cuts \gets []$}
+    \STATE{$order \gets []$}
+    \STATE{$available \gets |V|$, $needed \gets k$}
+    \WHILE[choose $k$ distinct integer values, representing the cuts]{$needed > 0$} 
+      \IF[random integer number in $[0, available[$]{$random(available) < needed$}
+        \STATE{$cuts.append(|V| - available)$}
+        \STATE{$order.append(k - needed)$}
+        \STATE{$needed \gets needed-1$}
+      \ENDIF
+      \STATE{$available \gets available - 1$}
+    \ENDWHILE
+    \FOR[shuffle the cut order using Fisher-Yates algorithm]{$i = k$ to $2$}
+      \STATE{$swap(order[i-1], order[random(i)])$}
+    \ENDFOR
+    \STATE{$cuts.append(cuts[0]+n)$}
+    \STATE{$order.append(order[0])$}
+
+    \STATE{$mutated \gets []$}
+    \FOR{$i = 0$ to $k-1$}
+      \IF[flip the cut with 50\% probability]{random() < 0.5}
+        \STATE{$mutated \gets mutated + reverse(route[cuts[order[i]],
+        cuts[order[i]+1]-1])$}
+      \ELSE[don't flip]
+        \STATE{$mutated \gets mutated + route[cuts[order[i]], cuts[order[i]+1]-1]$}
+      \ENDIF
+    \ENDFOR
+
+    \RETURN{mutated}
+  \end{algorithmic}
+  \caption{Mutation operator used in the ATSP genetic algorithm}
+  \label{algorithm:mutation}
+\end{algorithm}
+
+\newpage
+The genetic algorithm procedure is described in
+algorithm~\ref{algorithm:genetic}. It depends on two parameters: the population
+size and the number of generations. The initial population is generated by
+applying the nearest neighbor heuristic to yield multiple solutions (lines 1 to
+4), with a time complexity of $\Theta(m|V|^2)$. Then, throughout each
+generation, solutions with higher cost are discarded (lines 6 through 15). This
+selection procedure runs in $\Theta(|V|)$. The final step of each iteration
+involves mutating each individual from the population, according to
+algorithm~\ref{algorithm:mutation} (lines 16 through 18). Mutating all elements
+takes $\Theta(m\cdot(|V|)$ time. This results in a total of
+$\Theta(|V|+m\cdot|V|) = \Theta(|V|)$ running time per generation. Considering
+that the algorithm runs for $R$ generations, the total genetic algorithm time
+complexity is given by $\Theta(m\cdot|V|^2 + R\cdot|V|)$.
+
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$, population size $popsize$ and
+  number of generations $gens$. \\
+  \textbf{Output:} An ATSP route
+  \begin{algorithmic}[1]
+    \STATE{$population \gets []$}
+    \FOR[create the first generation]{$i=0$ to $popsize-1$}
+      \STATE{$population.append(nearest\_neighbor(G))$}
+    \ENDFOR
+
+    \FOR[improve for a fixed number of generations]{$i=0$ to $gens-1$}
+      \FOR[selection]{$j=0$ to $popsize-1$}
+        \STATE{$eb \gets random(popsize)$}
+        \STATE{$ew \gets random(popsize)$}
+        \IF{$cost(population[eb]) > cost(population[ew])$}
+          \STATE{$swap(eb, ew)$}
+        \ENDIF
+        \IF[75\% probability of the worst being discarded]{$random() < 0.75$}
+          \STATE{$population[ew] \gets population[eb]$}
+        \ENDIF
+      \ENDFOR
+      \FOR[mutation]{$j=0$ to $popsize-1$}
+        \STATE{$population[j] \gets mutation(population[j])$}
+        \STATE{$reevaluate(population[j])$}
+      \ENDFOR
+    \ENDFOR
+    \STATE{$best \gets population[0]$}
+    \FOR[return the best]{$i = 1$ to $popsize-1$}
+      \IF{$cost(population[i]) < cost(best)$}
+        \STATE{$best \gets population[i]$}
+      \ENDIF
+    \ENDFOR
+    \RETURN{best}
+  \end{algorithmic}
+  \caption{ATSP genetic algorithm}
+  \label{algorithm:genetic}
+\end{algorithm}
+
+
+\newpage
+\section{Ant colony algorithms}
+\label{section:ant-colony}
+
+Ant colony optimization algorithms, were first proposed by
+Dorigo~\citep{Dorigo1992,Dorigo1996}. They are inspired in ants' communication
+model, which is based on pheromone secretion~\citep{Goss1989}. Ants have the need
+to minimize path lengths between food sources and their colony, so that
+harvesting becomes more efficient. To do so, each ant secretes pheromones along
+their trail to influence other ants' behavior. Ants have a higher probability
+of choosing a path whose pheromone intensity is stronger. Those who choose
+shorter paths travel from the food source to the colony more often, increasing
+these paths' pheromone intensity. This, together with the fact that pheromones
+evaporate over time, makes shorter paths more likely to be chosen, thus
+optimizing the food harvesting process~\citep{Goss1989}.
+
+\subsection{Ant system}
+\label{section:ant-system}
+\textit{Ant system} (AS), developed by Dorigo et al.~\cite{Dorigo1996aco}, is
+an ant colony optimization algorithm applied to TSP. It starts by defining an
+initial pheromone intensity value for each of the graph's edges.  Then, the
+following iterative process is repeated until the time limit is reached, a
+satisfactory solution is obtained or the algorithm reaches stagnation.
+
+Each iteration $t$ starts by randomly placing $m$ ants, which are simple
+agents, on the graph's vertices. Each ant chooses the next vertex to visit
+using a probability function, defined in equation~\ref{eq:next-child}, that
+depends on the distance between the current and next vertices and on the
+pheromone trail on the respective edge:
+
+\begin{equation}
+p^k_{ij}(t) = \left\{
+  \begin{array}{l l}
+   \dfrac{[\tau_{ij}(t)]^\alpha \cdot [\eta_{ij}]^\beta}{ \sum [\tau_{ij}(t)]^\alpha \cdot [\eta_{ij}]^\beta} & \mbox{if} j \not\in \mbox{visited}^k \\
+   0 & \mbox{otherwise}
+  \end{array}
+  \right.
+  \label{eq:next-child}
+\end{equation}
+
+$p^k_{ij}(t)$ represents the probability of ant $k$ traveling to vertex $j$,
+from its current position $i$. It depends on several factors:
+
+\begin{itemize}
+  \item whether or not $j$ has already been visited by ant $k$ in the current
+  iteration;
+  \item the edge's pheromone trail $\tau_{ij}(t)$ and
+  \item a distance heuristic $\eta_{ij} = \dfrac{1}{d_{ij}}$, with $d_{ij}$
+  being the distance between $i$ and $j$.
+\end{itemize}
+
+$\alpha$ and $\beta$ are parameters that determine the relative influence
+between the two heuristics. Ants keep advancing until they visit every vertex.
+At this point, every ant $k$ has an associated tour, represented as a sequence
+$r^k(t)$. An edge $(i,j) \in E$ is said to belong to $r^k(t)$ if and only if
+$i$ is immediately followed by $j$ in sequence $r^k(t)$ or if $i$ is the last
+and $j$ is the first element of $r^k(t)$.
+
+At this point, pheromone trail intensities are updated according to the
+following formula:
+
+\begin{equation}
+  \tau_{ij}(t+1) = \rho \cdot \tau_{ij}(t) + \sum_{k=1}^m\Delta\tau^k_{ij}(t)
+  \label{eq:update}
+\end{equation}
+
+This expresses both the evaporation process --- with $\rho \in [0, 1]$ --- and
+the pheromone secretion, represented by $\Delta\tau^k_{ij}(t)$. This amount
+depends on the tour's length $L_k(t)$ and $Q$, a parameter:
+
+\begin{equation}
+  \Delta\tau^k_{ij}(t) = \left\{
+    \begin{array}{l l}
+      \dfrac{Q}{L_k(t)} & if (i,j) \in r^k(t) \\
+      0 & \mbox{otherwise}
+    \end{array}
+    \right.
+  \label{eq:trail}
+\end{equation}
+
+The algorithm's resulting tour is the best one found by any of the $m$ ants
+throughout the iterations.
+
+To calculate the time complexity of ant colony system, consider each iteration.
+The initialization step --- placing $m$ ants on arbitrary vertices --- has a
+complexity of $\Theta(m)$. Since every ant has to advance $|V|-1$ times and
+each ant movement requires the calculation of $p^k_{ij}(t)$ for every $j$,
+the total ant tour construction time complexity is given by $\Theta(m|V|^2)$.
+
+The time complexity of updating pheromone intensities, with a basic
+implementation, would be $\Theta(|V|^2 + m|V|)$, as every edge needs to be
+updated and each ant contributes to the increment of $|V|$ edges' trails.
+However, the calculation of pheromone intensity updates --- given by the second
+summand of equation~\ref{eq:update} --- can be done during the tour
+construction phase without rising its time complexity. This reduces the
+updating phase's time complexity to $\Theta(|V|^2)$. The overall time
+complexity of an AS iteration can now be given by $\Theta(m + m|V|^2 + |V|^2) =
+\Theta(m|V|^2)$.
+
+For large problem instances, this complexity can be quite high. It can be
+reduced by introducing the concept of \textit{candidate
+lists}~\cite{Dorigo1996aco}. A candidate list contains, for every vertex $i$,
+an ordered list of the $c$ closest vertices. In the tour construction phase,
+each ant only considers vertices from this list when choosing its next
+destination (unless they are all visited, in which case it considers all the
+vertices). Given that $0 < c < |V|$, the time complexity of an AS iteration is
+now characterized by $\Omega(mc|V|)$ and $O(m|V|^2)$.
+
+
+\subsection{MAX-MIN ant system}
+\label{section:mmas}
+
+A variation of \textit{ant system}, proposed by \citet{Stutzle1997}, is called
+\textit{MAX-MIN ant system} (MMAS). The main difference between MMAS and AS is
+regarding the update of pheromone intensities. At each iteration, only the ant
+with the shortest tour is taken into account. Additionally, every value
+$\tau_{ij}(t)$ is bounded both below and above. This leads to the rewrite of
+equation~\ref{eq:update}:
+
+\begin{align}
+  k_{best} & = \mbox{arg min}_k L_k(t) \\
+  \tau_{ij}(t+1) & = max(\tau_{min}, min(\tau_{max}, \rho \cdot \tau_{ij}(t) + \Delta\tau^{k_{best}}_{ij}(t)))
+  \label{eq:update-mmas}
+\end{align}
+
+This bounding technique helps to alleviate the problems of early
+stagnation~\cite{Stutzle1997} --- a problem that occurs when some edges'
+pheromone trail intensities rise so high that all ants end up converging too
+soon to the same tour.
+
+Additionally, MMAS is stated to be one of the best performing ant colony
+algorithms~\citep{Stutzle2000} and its convergence has been
+proved~\citep{Stutzle2002}. This led to the choosing of MMAS for further
+analysis and comparison with other approaches.
+
+The pseudo-code for the algorithm used when deciding which vertex an ant should
+move to is given in algorithm~\ref{algorithm:mmas-selection}. It starts by
+gathering the first $c$ vertices that are to be visited, while calculating the
+probability of each one being chosen (lines 3 through 12). This probability
+depends on both distance and pheromone intensity of the arc, as well as on two
+parameters that determine the influence of each heuristic: $\alpha$ and
+$\beta$. Lines 13 through 19 implement the selection based on the
+probabilities. The time complexity for the vertex selection is given by the
+lower bound $\Omega(c)$ and the upper bound $O(|V|)$.
+
+\begin{algorithm}
+  \textbf{Input:} A graph $G=(V,E)$, pheromone levels $pheromones$, ant's
+  visited vertices $route$ and parameters $\alpha$ and $\beta$ \\
+  \textbf{Output:} The next vertex to be visited by the ant
+  \begin{algorithmic}[1]
+    \STATE{$candidates \gets []$, $odds \gets []$}
+    \STATE{$total \gets 0$, $current \gets route[|route|-1]$}
+    \FORALL{$v \in V$}
+      \IF{$v \not\in route$}
+        \STATE{$candidates.append(v)$}
+        \STATE{$r \gets cost(current, v)^\alpha \cdot (pheromones[current][v])^\beta$}
+        \STATE{$total \gets total+r$}
+        \STATE{$odds.append(r)$}
+      \ENDIF
+
+      \IF{$|candidates| == c$}
+        \item \textbf{break}
+      \ENDIF
+    \ENDFOR
+
+    \STATE{$r \gets random() \cdot total$}
+    \FOR{$k=0$ to $|odds|-1$}
+      \STATE{$r \gets r - odds[k]$}
+      \IF{$r \leq 0$}
+        \RETURN{$candidates[k]$}
+      \ENDIF
+    \ENDFOR
+  \end{algorithmic}
+  \caption{Ant vertex selection used in max-min ant system}
+  \label{algorithm:mmas-selection}
+\end{algorithm}
+
+The pseudo-code for MMAS is given by algorithm~\ref{algorithm:mmas}. First, it
+initializes the pheromone values for each edge, each represented by a pair of
+vertices, in $\Theta(|V|^2)$ time (lines 2 through 7). Then, in each iteration,
+$m$ ants are placed in randomly chosen vertices (lines 10 through 12), in
+$\Theta(m)$ time. Each ant then procedes to move to the next vertex (using
+algorithm~\ref{algorithm:mmas-selection}) until all vertices are visited.  The
+vertex selection method is executed $\Theta(m|V|)$ times, yielding a total time
+complexity described by the bounds $\Omega(mc|V|)$ and $O(m|V|^2)$. This is
+followed by the evaporation process (lines 18 through 22), that runs in
+$\Theta(|V|^2)$. The final step regards pheromone update using the lowest cost
+route obtained in this iteration (lines 24 through 32), and it runs in
+$\Theta(|V|+m)$. 
+
+Considering that \textit{MAX-MIN ant system} runs for $R$ iterations, using $m$
+ants, a candidate list of size $c$ and that the heuristic used in line 1 runs in
+$\Theta(H)$ time, the total running time is given by the bounds $\Omega(H +
+(|V|^2 + mc|V|)\cdot R)$ and $O(H+m|V|^2\cdot R)$.
+
+\vfill
+
+\begin{algorithm}[H]
+  \textbf{Input:} A complete graph $G=(V,E)$ \\
+  \textbf{Output:} An ATSP route
+  \begin{algorithmic}[1]
+    \STATE{$best \gets heuristic(G)$}
+    \STATE{$pheromones \gets []$}
+    \FORALL[pheromone initialization]{$v \in V$}
+      \FORALL{$w \in V$}
+        \STATE{$pheromones[v][w] \gets \tau_{min}$}
+      \ENDFOR
+    \ENDFOR
+    \FOR{$r=1$ to $iterations$}
+      \STATE{$routes \gets []$}
+      \FOR[ant initialization, starting in a random vertex]{$i=0$ to $m-1$}
+        \STATE{$routes.append([random(|V|)])$}
+      \ENDFOR
+
+      \FOR[each ant must advance $|V|-1$ times]{$i = 1$ to $|V|-1$}
+        \FOR{$j = 0$ to $m-1$}
+          \STATE{$routes[j].append(ant\_selection(G, pheromones, routes[j], alpha, beta))$}
+        \ENDFOR
+      \ENDFOR
+
+      \FORALL[pheromone evaporation]{$v \in V$}
+        \FORALL{$w \in V$}
+          \STATE{$pheromones[v][w] \gets max(\tau_{min}, pheromones[v][w]\cdot\rho)$}
+        \ENDFOR
+      \ENDFOR
+
+      \STATE{$route \gets routes[0]$}
+      \FOR{$i = 1$ to $m-1$}
+        \IF{$cost(routes[i]) < cost(route)$}
+          \STATE{$route \gets routes[i]$}
+        \ENDIF
+      \ENDFOR
+
+      \FOR[pheromone update]{$i = 0$ to $|V|-1$}
+        \STATE{$v \gets route[i]$, $w \gets route[(i+1)\% |V|]$}
+        \STATE{$pheromone[v][w] \gets min(\tau_{max}, pheromones[v][w] + cost(route)^{-1})$}
+      \ENDFOR
+
+      \IF{$cost(route) < cost(best)$}
+        \STATE{$best \gets route$}
+      \ENDIF
+
+    \ENDFOR
+    \RETURN{best}
+  \end{algorithmic}
+  \caption{Max-min ant system}
+  \label{algorithm:mmas}
+\end{algorithm}
+
+\newpage
+
+
+\section{Complexity overview of ATSP algorithms}
+\label{section:complexity}
+
+All of the previously presented algorithms aim to solve the \textit{Asymmetric
+Traveling Salesman Problem}. Table~\ref{tab:complexity} presents comparative
+information regarding their time complexities.
+
+\begin{table}[h!]
+  \caption{Bounds for ATSP algorithms. There is a tight bound whenever both the
+  lower and upper bounds are the same. $R$ represents the number of iterations of a
+  given algorithm. $H$ is the time complexity for a chosen heuristic, such as
+  the repetitive nearest neighbor or the greedy algorithm}
+  \begin{center}
+    \begin{tabular}{llll}
+      \hline
+      Algorithm & Lower bound & Upper bound & Tight bound \\
+      \hline
+      Greedy                      & -- & -- & $\Theta(|V|^2 log |V|)$ \\
+      Nearest neighbor            & -- & -- & $\Theta(|V|^2)$ \\
+      Repetitive nearest neighbor & -- & -- & $\Theta(|V|^3)$ \\
+      Hill climbing (2-opt)       & -- & $O(H+|V|^2 \cdot R)$ & -- \\
+      Genetic algorithm           & -- & -- & $\Theta(m|V|^2 + m|V| \cdot R)$ \\
+      MAX-MIN ant system          & $\Omega(H + (|V|^2 + mc|V|) \cdot R)$ & $O(H+m|V|^2 \cdot R)$ & -- \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \label{tab:complexity}
+\end{table}
+
+
+\section{Split clustering algorithm}
+\label{section:clustering}
+
+The \textit{route-first-cluster-second} approach to the \textit{Asymmetric
+Capacitated Vehicle Routing Problem} starts by building a tour --- a route that
+visits all vertices on a graph --- on graph $G$ by relaxing vehicle capacity
+constraints.  Then, this tour is split into several feasible routes, such that
+each one does not exceed the maximum vehicle capacity limit.
+
+Consider that a tour always starts and ends at the depot location. This makes it
+possible for one to define a tour as a sequence of vertices that represent waste
+containers. The clustering algorithm described in \citet{Beasley1983} ---
+referred to as \textit{Split}, from now on --- creates a set of routes such that
+the order by which the vertices are visited in any route is a contiguous
+subsequence of the generated tour. For example, a possible tour representation
+could be $t = \langle a, b, c, d, e, f \rangle$, with possible resulting routes
+being $\langle a, b \rangle$ and $\langle d, e, f \rangle$, but never $\langle
+a, c, d \rangle$ or $\langle e, f, a \rangle$.  Possible routes may be
+represented by the indices of both the starting and finishing vertices in the
+tour. Two sample routes are $t_{1, 3} = \langle a, b, c \rangle$ and $t_{3, 6} =
+\langle c, d, e, f \rangle$.
+
+The algorithm starts by creating an auxiliary graph, $H = (V^\prime,
+A^\prime)$, with $V^\prime = {0, 1, \cdots, |V|}$. Then, for every route
+$t_{i,j}$ an arc is added to $H$ from vertices $i-1$ to $j$ if and only if
+$t_{i,j}$ respects vehicle capacity constraints. The weight associated to every
+arc $(i - 1, j) \in A^\prime$ is given by the cost of going from the depot to
+vertex $i$, visiting every vertex in $t_{i,j}$ and going back to the depot. The
+resulting graph $H$ is acyclic, as there are no arcs connecting vertices $u$
+and $v$ if $u > v$. This means that $H$ is a \textit{directed acyclic graph}.
+
+The problem of finding the optimal cluster of routes such that each one is a
+contiguous subsequence of the tour is equivalent to finding the shortest path
+between vertices $0$ and $|V|$ in graph $H$~\citep{Beasley1983}. Finding the
+shortest path between two vertices in a \textit{directed acyclic graph} can be
+done in $\Theta(|V^\prime| + |A^\prime|) = \Theta(|V^\prime|^2) = \Theta((|V| +
+1)^2) = \Theta(|V|^2)$, as explained in~\citet{Manber1989}.
+
+It is important to note that although this algorithm yields an optimal solution
+based on the visiting sequence of any given tour, applying it to an optimal ATSP
+solution does not yield a minimal ACVRP set of routes~\cite{Beasley1983}.
+
+The \textit{split} algorithm can be implemented using the pseudo-code available
+in algorithm~\ref{algorithm:clustering}. The initialization process (lines 1
+through 5) prepares auxiliary information to allow the calculation of the length
+and load of any subroute in constant time. This step is done in $\Theta(|V|)$
+time.
+
+The algorithm then proceeds to calculate the shortest path (lines 6 through 16),
+without the need to explicitly create the auxiliary graph. As explained above,
+this process runs in $\Theta(|V|^2)$. The final step of the clustering algorithm
+uses the information obtained through the shortest path procedure to build the
+optimal set of routes (lines 19 through 26), with a running time of
+$\Theta(|V|)$. This yields the total running time of $\Theta(|V|^2)$.
+
+\vspace{1cm}
+
+\begin{algorithm}[h!]
+  \textbf{Input:} A complete graph $G=(V,E)$ and a route $route$ to cluster \\
+  \textbf{Output:} An set of ACVRP routes
+  \begin{algorithmic}[1]
+    \STATE{$load \gets [0]$, $previous \gets [0]$, $distance \gets [0]$, $length
+    \gets [0]$}
+    \FORALL[initialization]{$i=1$ to $|route|-1$}
+      \STATE{$load.append(load.last + demand(route[i]))$}
+      \STATE{$length.append(length.last + cost(route[i-1], route[i])$}
+    \ENDFOR
+
+    \FOR[shortest path algorithm]{$i=0$ to $|route|-1$}
+      \FOR{$j=i+1$ to $|route|-1$}
+        \STATE{$v\_load \gets load[j] - load[i+1] + demand(route[i+1])$}
+        \STATE{$v\_length \gets length[j] - length[i+1] + cost(depot,
+        route[i+1]) + cost(route[j], depot)$}
+        \STATE{$dist \gets distance[i] + v\_length$}
+        \IF{$v\_load < capacity \wedge dist < distance[j]$}
+          \STATE{$distance[j] \gets dist$}
+          \STATE{$previous[j] \gets i$}
+        \ENDIF
+      \ENDFOR
+    \ENDFOR
+
+    \STATE{$routes \gets []$}
+    \STATE{$i \gets |route|-1$}
+    \WHILE[route construction]{$previous[i] \neq i$}
+      \STATE{$r \gets [depot]$}
+      \FOR{$j = previous[i]$ to $i$}
+        \STATE{$r.append(route[j])$}
+      \ENDFOR
+
+      \STATE{$routes.append(r)$}
+      \STATE{$i \gets previous[i]$}
+    \ENDWHILE
+
+    \RETURN{routes}
+  \end{algorithmic}
+  \caption{ACVRP clustering algorithm}
+  \label{algorithm:clustering}
+\end{algorithm}
+
+\newpage
+
+\section{Clarke-Wright savings heuristic for the ACVRP}
+\label{section:savings}
+
+
+The Clarke-Wright heuristic~\citep{Clarke1964}, one of the most known heuristic
+for the CVRP~\citep{Laporte01}, is based on the notion of \textit{savings}. It
+builds a vehicle route for every container and follows by merging pairs of
+routes. When merging two routes in the form $\langle depot, \ldots, i, depot
+\rangle$ and $\langle depot, j, \ldots, depot \rangle$, the cost reduction ---
+or saving --- is given by the expression in equation~\ref{eq:savings}:
+\begin{equation}
+  s_{ij} = cost(i, depot) + cost(depot, j) - cost(i, j)
+  \label{eq:savings}
+\end{equation}
+
+The heuristic proceeds by merging every pair of routes in descending order of
+$s_{ij}$, as long as the merge operation does not violate any of the following
+conditions:
+
+\begin{itemize}
+  \item $s_{ij}$ is greater of equal to $0$;
+  \item the merged route does not violate the capacity constraint;
+  \item vertex $i$ is the first of its route;
+  \item vertex $j$ is the last of its route;
+  \item vertices $i$ and $j$ do not belong to the same route.
+\end{itemize}
+
+Even if a saving is $0$, merging the two routes reduces the number of vehicles
+by one, so only negative savings are forbidden. As savings between vertices
+does not change and a merge between two vertices $i$ and $j$ can only be done
+once, one only needs to initially calculate all savings and sort them.
+
+Creating a route for each vertex has a time complexity of $\Theta(|V|)$.
+Calculating savings and sorting them can be done in $\Theta(|V|^2 log |V|)$.
+With proper data structures, the merging operation can be done in constant time.
+This results in a total running time complexity of $\Theta(|V|^2 log |V|)$.
+
+The pseudo-code for the Clarke-Wright heuristic is available in
+algorithm~\ref{algorithm:savings}. To allow merging in constant time, each
+vertex contains a pointer to the previous and following vertices, as well as
+pointers to the first and last vertices of its route.
+
+The initialization process (lines 1 through 12) creates the initial routes and
+calculates all the savings, in $\Theta(|V|^2)$ time. Then, the savings are
+sorted in descending order, with a time complexity of $\Theta(|V|^2 log |V|)$
+(line 13). Then, savings are iterated, and if all the conditions are verified,
+its respective merging is applied (lines 14 to 27). As there are $|V|^2$ steps,
+and each merge is executed in constant time, this step runs with a time
+complexity of $\Theta(|V|^2)$. Finally, routes are constructed in $\Theta(|V|)$
+(lines 29 through 38).
+
+\begin{algorithm}
+  \textbf{Input:} A complete graph $G=(V,E)$ \\
+  \textbf{Output:} An set of ACVRP routes
+  \begin{algorithmic}[1]
+    \STATE{$next \gets []$, $prev \gets []$}
+    \STATE{$first \gets []$, $last \gets []$}
+    \STATE{$load \gets [], savings \gets []$}
+    \FORALL[initialization]{$v \in V \setminus depot$}
+      \STATE{$next[v] \gets prev[v] \gets depot$}
+      \STATE{$first[v] \gets last[v] \gets v$}
+      \STATE{$load[v] \gets demand(v)$}
+
+      \FORALL{$w \in V \setminus depot$}
+        \STATE{$c \gets cost(v, depot) + cost(depot, w) - cost(v, w)$}
+        \STATE{$savings.append((c,v,w))$}
+      \ENDFOR
+    \ENDFOR
+
+    \STATE{sort(savings)}
+    \COMMENT{sort by $s_{ij}$ in descending order}
+
+    \FORALL[visit savings in descending order, merging routes]{$(c,v,w) \in savings$}
+      \IF{$s_{vw} \geq 0$}
+        \IF{$next[v] = depot \wedge prev[w] = depot \wedge last[w] \neq v \wedge
+first[v] \neq w$}
+          \IF{$load[v]+load[w] \leq capacity$}
+            \STATE{$next[v] \gets w$}
+            \STATE{$prev[w] \gets v$}
+            \STATE{$first[last[w]] \gets first[v]$}
+            \STATE{$last[first[v]] \gets last[w]$}
+            \STATE{$load[first[v]] \gets load[last[w]] \gets load[v] + load[w]$}
+          \ENDIF
+        \ENDIF
+      \ELSE
+        \item \textbf{break}
+      \ENDIF
+    \ENDFOR
+
+    \STATE{$routes \gets []$}
+    \FORALL[route construction]{$v \in V$}
+      \IF{$v \neq depot \wedge prev[v] = depot$}
+        \STATE{$route \gets [depot]$}
+        \WHILE{$v \neq depot$}
+          \STATE{$route.append(v)$}
+          \STATE{$v \gets next[v]$}
+        \ENDWHILE
+        \STATE{$routes.append(route)$}
+      \ENDIF
+    \ENDFOR
+
+    \RETURN{routes}
+  \end{algorithmic}
+  \caption{Clarke-Wright savings heuristic for the ACVRP}
+  \label{algorithm:savings}
+\end{algorithm}
+
+\newpage
+\section{Approach overview}
+\label{section:overview}
+
+The previous sections in this chapter presented several algorithms. First,
+sections~\ref{section:heuristics} to~\ref{section:mmas} introduced six known
+techniques to address the ATSP. Section~\ref{section:clustering} described an
+algorithm to divide a route for the ATSP into a feasible set of routes for a
+ACVRP on the same graph. The process of first calculating an ATSP route and then
+dividing it into a ACVRP solution is known as a
+\textit{route-first-cluster-second} approach.
+
+Section~\ref{section:savings} presented a technique to address the ACVRP
+directly, without the need to first find an optimized ATSP solution. This method
+will be compared to the six \textit{route-first-cluster-second} approaches
+previously described.
+
+Changing the order by which a vehicle visits the containers does not invalidate
+a solution, as the total waste to be collected does not change --- maintaining
+the validity of the capacity constraints. This means that further optimization
+may be achieved by permuting the vertices of each route. This is equivalent to
+solving the ATSP within a sub-graph that only contains the route vertices.
+
+This final optimization step will be applied to the six
+\textit{route-first-cluster-second} approaches and to the Clarke-Wright
+approach. To optimize the routes obtained through the savings algorithm, two
+ATSP techniques were used: 2-opt and MMAS. On the other hand, routes obtained
+using the six \textit{route-first-cluster-second} approaches were optimized
+using 2-opt.
+
+Although it would be interesting to obtain data for all six ATSP techniques, it
+would not be possible to execute all the algorithms in time for this project's
+deadline. Table~\ref{table:approach} summarizes all the ACVRP techniques
+evaluated during this study.
+
+\begin{table}[h!]
+  \caption{Summary of the ACVRP techniques evaluated during this study. RNN:
+  \textit{repetitive nearest neighbor}; GA: \textit{genetic algorithm}; MMAS:
+  \textit{MAX-MIN ant system}}
+  \begin{center}
+    \begin{tabular}{lll}
+      \hline
+      \textbf{ATSP algorithm} & \textbf{Clustering} & \textbf{Route improvement} \\
+      \hline
+      \textit{Greedy} & \textit{Split} & \textit{2-opt} \\
+      \textit{RNN} & \textit{Split} & \textit{2-opt} \\
+      \textit{RNN + 2-opt} & \textit{Split} & \textit{2-opt} \\
+      \textit{Greedy + 2-opt} & \textit{Split} & \textit{2-opt} \\
+      \textit{GA} & \textit{Split} & \textit{2-opt} \\
+      \textit{RNN + MMAS} & \textit{Split} & \textit{2-opt} \\
+      \hline
+      \multicolumn{2}{l}{\textbf{ACVRP algorithm}} & \textbf{Route improvement} \\
+      \hline
+      \multicolumn{2}{l}{\textit{Savings}} & \textit{2-opt} \\
+      \multicolumn{2}{l}{\textit{Savings}} & \textit{RNN + MMAS} \\
+      \hline
+    \end{tabular}
+  \end{center}
+  \label{table:approach}
+\end{table}
+
+
+
+\newpage
+
+\section{Validation of algorithm implementations}
+\label{section:validation}
+
+After implementing the algorithms described in this chapter, there was the need
+to validate their results. Validation is done by applying these algorithms to
+standard \textit{TSPLIB} datasets and comparing the results to either the
+optimum route cost (when known) or to the best route found so far.
+
+\subsection{ATSP validation}
+\label{section:atsp-validation}
+
+First, construction heuristics --- \textit{greedy} and \textit{repetitive
+nearest neighbor} ---, \textit{hill climbing}, the \textit{genetic algorithm}
+and \textit{MAX-MIN ant system} were validated against ATSP instances. This
+allows one to verify if these techniques successfully build a near-optimal
+tour.
+
+It is important to note that, as \textit{hill climbing} and \textit{MAX-MIN ant
+system} both depend on the \textit{repetitive nearest neighbor} technique, their
+resulting routes are always better or equal to the one obtained by this
+construction heuristic.
+
+Results are presented in table~\ref{table:validation-atsp}. All parameters used to
+obtain these values are according to the original authors of each algorithm.
+Both GA and MMAS were executed for $1000$ iterations. GA was run with a population of
+$100$ and $p=0.35$. MMAS was run with $200$ ants and $\beta=5$.
+
+\begin{table}[h!]
+  \caption{Performance of our heuristic and meta-heuristic implementations
+  using the datasets from TSPLIB. Performance is given in the form of the ratio
+  between the heuristic's route average cost and the dataset optimum (minimum)
+  cost.}
+  \begin{center}
+    \begin{tabular}{x{1.3cm}x{1.3cm}x{1.5cm}x{1.2cm}x{1.2cm}x{1.2cm}x{1.2cm}x{1.2cm}x{1.2cm}}
+      \hline
+      Dataset & Vertices & Optimum & Greedy & RNN & Greedy + 2-opt &  RNN + 2-opt & GA & MMAS \tabularnewline
+      \hline
+      br17    &  17 & 39    & 1.97 & 1.43 & 1.00 & 1.00 & 1.00 & 1.00 \tabularnewline
+      ftv33   &  33 & 1286  & 1.16 & 1.23 & 1.14 & 1.17 & 1.17 & 1.00 \tabularnewline
+      ftv35   &  35 & 1473  & 1.30 & 1.13 & 1.31 & 1.13 & 1.13 & 1.04 \tabularnewline
+      ftv38   &  38 & 1530  & 1.25 & 1.14 & 1.24 & 1.08 & 1.08 & 1.07 \tabularnewline
+      p43     &  43 & 5620  & 1.03 & 1.01 & 1.00 & 1.00 & 1.00 & 1.00 \tabularnewline
+      ftv44   &  44 & 1613  & 1.23 & 1.14 & 1.24 & 1.14 & 1.09 & 1.03 \tabularnewline
+      ftv47   &  47 & 1776  & 1.27 & 1.22 & 1.27 & 1.20 & 1.15 & 1.11 \tabularnewline
+      ry48p   &  48 & 14422 & 1.32 & 1.07 & 1.04 & 1.02 & 1.05 & 1.02 \tabularnewline
+      ft53    &  53 & 6905  & 1.77 & 1.24 & 1.54 & 1.18 & 1.19 & 1.15 \tabularnewline
+      ftv55   &  55 & 1608  & 1.40 & 1.21 & 1.34 & 1.21 & 1.13 & 1.07 \tabularnewline
+      ftv64   &  64 & 1839  & 1.36 & 1.19 & 1.29 & 1.17 & 1.16 & 1.04 \tabularnewline
+      ftv70   &  70 & 1950  & 1.30 & 1.17 & 1.26 & 1.17 & 1.16 & 1.09 \tabularnewline
+      ft70    &  70 & 38673 & 1.14 & 1.08 & 1.11 & 1.06 & 1.05 & 1.04 \tabularnewline
+      kro124p & 124 & 36230 & 1.21 & 1.19 & 1.15 & 1.17 & 1.15 & 1.08 \tabularnewline
+      ftv170  & 170 & 2755  & 1.43 & 1.30 & 1.40 & 1.28 & 1.24 & 1.18 \tabularnewline
+      \hline
+    \end{tabular}
+  \end{center}
+  \label{table:validation-atsp}
+\end{table}
+
+Table~\ref{table:validation-atsp} shows that 2-opt, GA and MMAS yield
+significantly better results than the heuristics. MMAS, using only 1000
+iterations, produces results within 5\% of the optimal solution for half of the
+datasets.
+
+
+\subsection{ACVRP validation}
+\label{section:acvrp-validation}
+
+Having validated the six ATSP techniques, it is necessary to validate the eight
+ACVRP approaches described in section~\ref{section:overview}
+(table~\ref{table:approach}). These approaches were applied to the CVRP datasets
+available in \textit{TSPLIB} to obtain the benchmarks in
+table~\ref{table:validation-acvrp}.
+
+\begin{table}[h!]
+  \caption{Performance of our heuristic and meta-heuristic implementations
+  using the datasets from TSPLIB. Performance is given in the form of the ratio
+  between the heuristic's route average cost and the dataset reference
+  solution's cost.}
+  \begin{center}
+    \begin{tabular}{x{1.3cm} x{1.2cm} x{1.2cm} x{1.2cm} x{1.2cm} x{1.2cm}
+x{1.2cm} x{1.3cm} x{1.5cm}}
+      \hline
+      Vertices & Greedy & RNN & Greedy + 2-opt & RNN + 2-opt & GA & MMAS &
+      Savings + 2-opt & Savings + MMAS \tabularnewline
+      \hline
+       13 & 1.223 & 1.198 & 1.198 & 1.193 & 1.223 & 1.190 & 1.174 & 1.174 \tabularnewline
+       22 & 1.204 & 1.122 & 1.068 & 1.046 & 1.012 & 1.062 & 1.037 & 1.037 \tabularnewline
+       23 & 1.172 & 1.066 & 1.012 & 1.030 & 1.066 & 1.007 & 1.013 & 0.999 \tabularnewline
+       30 & 0.961 & 0.961 & 0.954 & 0.979 & 0.946 & 0.946 & 1.001 & 0.952 \tabularnewline
+       31 & 1.472 & 1.631 & 1.760 & 1.548 & 1.451 & 1.310 & 1.657 & 1.617 \tabularnewline
+       33 & 1.066 & 1.042 & 1.034 & 1.037 & 1.033 & 1.033 & 1.010 & 1.009 \tabularnewline
+       51 & 1.148 & 1.137 & 1.139 & 1.110 & 1.087 & 1.095 & 1.136 & 1.125 \tabularnewline
+       76 & 1.408 & 1.346 & 1.346 & 1.342 & 1.319 & 1.348 & 1.332 & 1.306 \tabularnewline
+       76 & 1.593 & 1.573 & 1.515 & 1.498 & 1.518 & 1.491 & 1.471 & 1.471 \tabularnewline
+       76 & 1.053 & 0.994 & 1.031 & 0.990 & 0.977 & 0.989 & 0.951 & 0.935 \tabularnewline
+       76 & 0.772 & 0.759 & 0.780 & 0.746 & 0.732 & 0.757 & 0.747 & 0.719 \tabularnewline
+      101 & 1.217 & 1.167 & 1.168 & 1.123 & 1.070 & 1.093 & 1.090 & 1.076 \tabularnewline
+      101 & 1.176 & 1.136 & 1.141 & 1.120 & 1.130 & 1.072 & 1.076 & 1.066 \tabularnewline
+      262 & 1.019 & 1.013 & 1.036 & 0.998 & 0.986 & 0.996 & 0.952 & 0.945 \tabularnewline
+      \hline
+    \end{tabular}
+  \end{center}
+  \label{table:validation-acvrp}
+\end{table}
+
+It is important to remember that the reference values for these datasets
+represent solutions for a fixed number of vehicles, specified in the dataset.
+When applied to this specific problem, the number of vehicles is a decision
+variable, and not a fixed number. This explains why some algorithms yield
+solutions with ratios below $1.0$, as it may be possible to obtain routes that
+are more efficient by using a different number of vehicles.
+
+This values show that the \textit{route-first-cluster-second} approach, using
+any of the six ATSP techniques, is surpassed by the $savings$ heuristic in most
+of the CVRP datasets. However, there are two facts that must be taken into
+account. First, all of \textit{TSPLIB}'s CVRP datasets are symmetric. Second,
+these datasets only go up to $262$ vertices. Datasets used in
+chapter~\ref{chap:results} are asymmetric and contain a much higher number of
+vertices. With this in mind, the values in table~\ref{table:validation-acvrp}
+are insufficient to determine if the $savings$ approach is better or not than
+the \textit{route-first-cluster-second} approaches.
+
+\newpage
+
+
+
+
+\section{Chapter summary}
+\label{section:algorithms-summary}
+
+This chapter described a set of algorithms that can be used to address the
+\textit{Asymmetric Capacitated Vehicle Routing Problem}. Most of these start by
+solving the associated \textit{Asymmetric Traveling Salesman Problem}, by
+ignoring capacity constraints, and subsequently split the resulting tour into
+vehicle routes using the algorithm described in
+section~\ref{section:clustering}. Additionally, a heuristic for the CVRP was
+also described --- the Clarke-Wright \textit{savings} heuristic. This technique
+does not start by solving the ATSP, and therefore it is not a
+\textit{route-first-cluster-second} approach.
+
+
+The following chapter presents the results for a sensitivity analysis on
+\textit{MAX-MIN ant system}'s parameters, to maximize its performance. This is
+followed by an exposition of the results obtained when applying the eight
+techniques for the ACVRP to the large datasets. Although this chapter already
+provided some results regarding their comparative performance, the validation
+datasets are quite different from the ones to be used when the optimization
+framework is deployed.
+
+
+

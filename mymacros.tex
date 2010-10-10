@@ -8,6 +8,13 @@
 \newcommand{\osm}{OpenStreetMap.org}
 \newcommand{\fhp}{Fraunhofer Portugal AICOS}
 
+% table
+\newcolumntype{x}[1]{%
+>{\raggedleft\hspace{0pt}}p{#1}}%
+
+% Algorithmic
+\renewcommand{\algorithmiccomment}[1]{// #1}
+
 % Gantt
 \newcommand\ganttline[4]{% line, tag, start end
 \node at (0,#1) [anchor=base east] {#2};

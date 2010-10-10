@@ -167,14 +167,16 @@ with the `report' document style}{}}{}
   \par%
   \center{\noindent\large #1: #2 #3}}}
 
+%if provisional add a watermark
+
 \if@provisional
-   \if@portugues
-      \def\@provisionaltext{Vers\~{a}o Provis\'{o}ria}
+  \usepackage[firstpage]{draftwatermark}
+  \SetWatermarkFontSize{72pt}
+  \if@portugues
+     \SetWatermarkText{Para Aprecia\c{c}\~{a}o por J\'{u}ri}
    \else
-      \def\@provisionaltext{Provisional Version}
+     \SetWatermarkText{For Jury Evaluation}
    \fi
-\else
-   \def\@provisionaltext{\@empty}
 \fi
 
 % Copyrights
@@ -200,8 +202,8 @@ with the `report' document style}{}}{}
 {\def\baselinestretch{1.2}\Huge\bf \@title \par}
 \vskip 10mm%
 {\Large\bf \@author}%
-\vskip 10mm%
-{\Large\textsc \@provisionaltext}
+%\vskip 10mm%
+%{\Large\textsc \@provisionaltext}
 \vfill%
 {\large \@degree}%
 \vskip 2mm
@@ -226,7 +228,6 @@ with the `report' document style}{}}{}
 %% SECOND page
 \def\committeepage{%
 \cleardoublepage
-\large
 \thispagestyle{empty}
 \begin{center}%
 \null\vskip 12mm

@@ -1,0 +1,132 @@
+\chapter{Conclusions}
+\label{chap:conclusions}
+
+\section*{}
+
+This final chapter presents a review of the relevant information obtained from
+this study and an exposition of further research that could be done in this
+area. Section~\ref{section:conclusions} presents the sensibility analysis
+results regarding the \textit{MAX-MIN ant system} and describes results on the
+application of the \textit{route-first-cluster-second} approach to the waste
+collection scenario.
+
+Section~\ref{section:future-work} exposes some thoughts on how to further extend
+the study on both the \textit{Asymmetric Traveling Salesman Problem} and the
+\textit{Capacitated Vehicle Routing Problem}. It also finalizes this document by
+presenting the next stages of implementing the waste collectionwaste collection
+optimization framework.
+
+
+\section{Conclusions}
+\label{section:conclusions}
+
+This document presented an architecture proposal for the storage and retrieval
+of containers' status, together with formats for information interchange. These
+formats are built on top of JSON, an open standard that can be used to represent
+simple data structures. An alternative would be to use XML; however, JSON was
+preferred over XML due to the following reasons:
+
+\begin{itemize}
+  \item JSON has a simpler notation than that of XML;
+  \item JSON was designed to serve as a data interchange format, whereas XML
+  was designed to be a document interchange format.
+\end{itemize}
+
+The second goal of this work is to provide insight on existing algorithms to
+calculate efficient routes for waste collection. This problem is modeled as an
+\textit{Asymmetric Capacitated Vehicle Routing Problem} (ACVRP). Several methods
+have been proposed, in the literature, on how to approach the ACVRP.
+
+To solve the ACVRP, there are construction heuristics (such as the one by
+Clarke-Wright). These yield a set of vehicle routes, which can be further
+optimized by applying ATSP solving techniques.
+
+Another method to address the ACVRP involves solving the associated
+\textit{Asymmetric Traveling Salesman Problem} (ATSP) and dividing the resulting
+tour into routes that respect the vehicle capacity constraints. This is called a
+\textit{route-first-cluster-second} approach.
+
+To solve the ATSP, several techniques were compared: two construction
+heuristics --- \textit{greedy} and \textit{repetitive nearest neighbor} (RNN)
+--- and three meta-heuristics --- \textit{hill climbing} (2-opt),
+\textit{genetic algorithms} (GA) and \textit{MAX-MIN ant system} (MMAS).
+Apart from their comparison regarding the efficiency of resulting routes,
+MMAS was also targeted for a parameter sensibility analysis.
+
+\subsection{Sensitivity analysis of MMAS}
+
+As a result of the parameter sensitivity analysis for the \textit{MAX-MIN ant
+system}, it was shown that, for the given datasets, the optimum value for
+parameter $\beta$ lies in the interval $[5, 20]$. Although the optimum value
+appears to be located closed to the lower side of this interval, it is
+recommended that higher values are used. The rationale for this is that there is
+a significantly steep ascent for values close to $\beta=5$. Thus, it was chosen
+to use $\beta=20$ during this study. This helps to prevent against possible
+oscillations in the $\beta$ optimization curve, when applying MMAS to larger
+graphs.
+
+Regarding the number of ants and iterations, it was shown that increasing both
+parameters increases the resulting route efficiency. When applying this
+algorithm with a limited time frame, though, it is preferable to have a low
+number of ants and a high number of iterations. However, one must take into
+consideration that using MMAS with a low number of ants may lead to convergence
+too soon. Early convergence causes the algorithm not to take full advantage of
+the total available running time.
+
+\subsection{Comparison of methods for the ACVRP}
+
+When comparing the five methods to solve the ATSP, MMAS obtained more efficient
+routes than the other four methods. In average, the improvement of MMAS over
+the best route obtained using the other methods is of $2.6\%$.
+
+Although MMAS outperforms the other techniques in solving the ATSP, the same
+needs not to hold for the ACVRP solutions. Immediately after clustering, the
+hill climbing approach applied to the \textit{greedy} heuristic produces more
+efficient routes for half of the fifteen large datasets. Nevertheless, MMAS
+only exceeds the best solution for each dataset, in average, by $2.2\%$.
+
+The third step of the optimization consists of applying an ATSP technique to
+each of the vehicle routes obtained from the previous step. After this step,
+MMAS is still the approach that yields better results, with an average excess of
+$2.6\%$. This technique also has the lowest standard deviation ($\sigma=3.4\%$),
+which means that it is the most stable algorithm.
+
+In terms of solution efficency, MMAS is followed by the \textit{greedy}
+heuristic, which has an average excess of $3.2\%$ ($\sigma=4.2\%$). This shows
+that the initial ATSP solution performance does not directly influence the
+efficiency of the final ACVRP set of routes.
+
+It was also shown that the \textit{savings} heuristic performs better when
+followed by a MMAS optimization, rather than the 2-opt technique. This is
+consistent with the fact that MMAS had performed better than 2-opt when applied
+to ATSP instances. This leads to the conclusion that it would be possible to
+further reduce the route costs by applying MMAS at the final optimization step,
+instead of 2-opt.
+
+A 12-page article summarizing the results of this study was submitted to an
+international workshop on algorithmic approaches for transportation modeling.
+The preliminary version can be seen in appendix~\ref{appendix:article}.
+
+
+\section{Future work}
+\label{section:future-work}
+
+Regarding route optimization, this study analyzed a constructive heuristic and
+several \textit{route-first-cluster-second} approaches for solving the
+\textit{Capacitated Vehicle Routing Problem}. It would be possible to apply
+\textit{cluster-first-route-second} methods to these approaches, although most
+of them rely on predefining a fixed number of vehicles to use.
+
+It would also be interesting to apply MMAS and other techniques at the last
+optimization step, instead of simply using $2-opt$. This task was not done due
+to the time it would take to run all benchmarks.
+
+Having designed the architecture for information management regarding waste
+containers' fill status, the next step is to implement a web service
+application layer between the central server and the sensors. This would
+consist of sending the container's fill status using through an HTTP request.
+Depending on the sensors' network architecture --- currently being studied in
+Fraunhofer Portugal Research Center --- authorization policies and mechanisms
+might have to be designed.
+
+

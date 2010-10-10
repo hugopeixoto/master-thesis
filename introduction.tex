@@ -2,27 +2,25 @@
 
 \section*{}
 
+This chapter introduces this work, by presenting its context and motivation.
+Finally, it presents the project's objectives and the document structure.
 
-\section{Context and Motivation}
+\section{Context and motivation}
 \label{section:context}
 
 Municipal solid waste (MSW) production has been increasing in the last few
-years, along with economic growth\citep{McCarthy94}. This has led to the need
+years, along with economic growth~\citep{McCarthy94}. This has led to the need
 --- and subsequent development --- of efficient waste management solutions.
 Waste management involves not only the collection, but also the transportation,
 recycling and disposal of generated waste.
 
-One can find several case studies reporting the methodologies used by different
-countries, as well as reports describing the MSW generation quantities and
-patterns.
-
-According to \citet{Bhat1996}, up to 85\% of some cities' waste management
-budget spent goes to MSW collection and disposal. With this in mind, route
-optimization can be considered as an important field of study regarding the
+According to~\citet{Bhat1996}, municipal solid waste collection and disposal
+represents up to 85\% of some cities' waste management budget. With this in
+mind, route optimization is as an important field of study regarding the
 improvement of MSW management processes.
 
-Many cities around the world have studied and applied several optimization
-techniques to their collection scenarios, which can be very different from each
+Many cities around the world have studied and applied optimization techniques
+to their collection scenarios, which are usually very different from each
 other. In Portugal, however, there seems to be little research regarding this
 subject. \citet{Passaro200397} describes the waste management scenario in
 Portugal from 1996 and 2002, a period in which several improvements were made
@@ -30,12 +28,12 @@ due to changes in the legislation. In 2006, \citet{Magrinho20061477} further
 report the legislation trends and present some statistics on the average MSW
 generation rate. Concerning collection routing, \citet{Teixeira04} describes a
 study for optimizing the collection of urban recyclable waste in the
-centre-littoral region of Portugal.
+center-littoral region of Portugal.
 
 
 
 
-\section{Fill Status Monitoring}
+\section{Fill status monitoring}
 \label{section:monitoring}
 
 The Municipality of Porto, Portugal, is working together with the Fraunhofer
@@ -45,31 +43,31 @@ measurement of waste containers' fill status. This requires the deployment of
 low cost sensors in each container and the development of a communication
 system to gather information. On top of this platform, several applications
 will then be possible. As an example, this will allow researchers to study
-waste generation behaviours on a more detailed level. These monitoring systems
+waste generation behaviors on a more detailed level. These monitoring systems
 have been studied in places, such as Pudong New Area, in Shanghai,
-China\citep{Rovetta09,Vicentini09} and Sweden\citep{Johansson06}.
+China~\citep{Rovetta09,Vicentini09} and Sweden~\citep{Johansson06}.
 
-Another application for this system is the optimisation of waste collection
+Another application for this system is the optimization of waste collection
 routes.
 
 
 
 
-\section{Optimisation of Waste Collection Routes}
+\section{Optimization of waste collection routes}
 \label{section:optimization}
 
-The problem of optimising waste collection routes involves deciding, for
+The problem of optimizing waste collection routes involves deciding, for
 example, which streets must each garbage truck follow, which containers should
 each one of them collect and how many trucks should a fleet for a given city
 have.
 
 One of the first articles regarding this subject was done in
-1974\citep{Beltrami74}, and it was applied to both New York and Washington
-D.C., United States of America. Since then, several other cities have tried to
-minimise the costs involving waste collection: Trabon,
-Turkey\citep{Apaydin2007}; Barcelona, Spain\citep{Bautista2004}; Athens,
-Greece\citep{Karadimas2005}; Hanoi, Vietnam\citep{Tung2000}; Porto Alegre,
-Brazil\citep{Li2008} and many others. 
+1974~\citep{Beltrami74}, and it was applied to both New York and Washington
+D.C., United States of America. Since then, other cities have tried to minimize
+the costs by optimizing collection routes: Trabon, Turkey~\citep{Apaydin2007};
+Barcelona, Spain~\citep{Bautista2004}; Athens, Greece~\citep{Karadimas2005};
+Hanoi, Vietnam~\citep{Tung2000}; Porto Alegre, Brazil~\citep{Li2008} and many
+others.
 
 However, many of these studies do not have real-time information of the
 containers' fill status. Usually, they are either based on statistical data
@@ -78,40 +76,49 @@ waste in every container.
 
 Combining these techniques with the \textit{Fill Status Monitoring} platform
 described in section~\ref{section:monitoring}, the municipality of Porto,
-Portugal might reduce even further the collection costs. The main objective of
-this work is to develop a solution for route optimisation based on the
-previously presented platform.
+Portugal might reduce even further the collection costs.
+
 
 
 
 \section{Objectives}
 \label{section:objectives}
 
-With the deployment of a fill status monitoring solution in the municipality
-of Porto, there is the need to develop an optimisation framework for the
+With the deployment of a fill status monitoring solution in the municipality of
+Porto, there is the opportunity to develop an optimization framework for the
 waste collection routes.
 
-There are two scenarios that will need optimisation. First, there is a
-scenario similar to the \textit{Rollon-Rolloff} scenario. Second, a
-\textit{commercial} scenario will also be evaluated. The difference between
-these can be seen in Chapter~\ref{chap:sota}.
+The first challenge is to devise and implement an architecture to store and
+retrieve, when necessary, the information obtained from the container fill
+sensors. This includes specifying the information workflow, the database schema
+and formats to exchange data between modules.
 
-Other than the optimisation process, there is also the need to develop an
-architecture to store and retrieve, when necessary, the information obtained
-from the fill sensors.
+The second goal is to analyze and compare different algorithms for the
+optimization of waste collection routes so that an efficient itinerary can be
+calculated within a time-frame of two hours, given the containers' fill status
+and the collection vehicles' capacities.
 
+\newpage
+\section{Document structure}
 
-\section{Organisation}
+The next chapter on this document, chapter~\ref{chap:sota}, provides an
+overview of waste collection route optimization approaches. First, an informal
+description of each scenario is given. Then, each one of the scenarios is
+exposed as a mathematical formulation, followed by possible techniques that can
+be applied to them. Chapter~\ref{chap:problem} summarizes the problem statement,
+using the definitions presented by chapter~\ref{chap:sota}.
 
-Chapter~\ref{chap:sota} starts by presenting the optimisation of collection routes.
-First, an informal description of each scenario is given. Then, each one of the
-scenarios is exposed as a mathematical formulation, followed by possible
-techniques that can be applied to them.
+Chapter~\ref{chap:evaluation-framework} introduces the architecture proposal for
+the management of waste containers' fill status information --- modules,
+workflow and information interchange formats. It also presents the technologies
+used to implement this system. Finally, this chapter presents the metrics and
+datasets used for both algorithm validation and analysis.
 
-Chapter~\ref{chap:approach} introduces the optimisation framework being
-developed. Three modules are proposed and detailed, and the progress on each
-one is presented.
+Chapter~\ref{chap:algorithms} describes the algorithms used to optimize
+collection routes and shows their validation results.
+Chapter~\ref{chap:results} presents a comparative analysis of the chosen
+algorithms' performance. Chapter~\ref{chap:conclusions} finalizes this document
+by presenting the conclusions of this project, along with possible further
+developments and future work.
 
-Chapter~\ref{chap:work} presents a work plan for the project.  The work plan
-contains both the specification of the tasks, as well as a calendarisation.
 
